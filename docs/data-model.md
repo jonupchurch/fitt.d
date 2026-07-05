@@ -52,6 +52,14 @@ Output of parsing/analyzing a `Resume` (feature 003).
 - `sectionFeedback[]` — per-section status (`strong | needs-work | review`) + notes
 - `strengths[]`, `weaknesses[]`
 - `overallScore` — resume-quality score/grade, independent of any JD
+- `rewriteSuggestions[]` — `{ section, original, suggested, whyStronger }`,
+  generic bullet/phrasing advice independent of any job description.
+  Added during feature 003 planning: Constitution Principle IV lists
+  "rewrite suggestions" as part of resume analysis and the approved
+  wireframe (Screen 03) shows a before/after suggestion on this screen,
+  but this field was missing until now. Distinct from
+  `TailoringOutput.rewrittenBullets` (feature 004), which is JD-tailored
+  and gap-driven rather than generic.
 
 ### `GapAnalysis`
 Output of comparing `JDAnalysis` + `ResumeAnalysis` (feature 004).

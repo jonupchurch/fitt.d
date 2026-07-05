@@ -142,3 +142,21 @@ each completed Spec Kit phase rather than waiting to be asked.
   preview" value.
 - Tests run against a deterministic fake provider throughout (Principle
   V pattern) — no real model calls or cost in CI for this feature.
+
+## 2026-07-05 — Feature 003: Resume Analysis (spec)
+
+- `specs/003-resume-analysis/spec.md` — analyze the `Resume` from 001
+  into a `ResumeAnalysis` (parsed sections, ATS/formatting checks,
+  section-by-section feedback, strengths/weaknesses, overall score, and
+  generic rewrite suggestions), surfaced on a new `/analyze/report`
+  results screen (approved wireframe Screen 03). Three user stories: P1
+  score + ATS checks, P2 section feedback + strengths/weaknesses, P3
+  generic rewrite suggestions. Explicitly standalone — no dependency on
+  a job description existing. Checklist passed clean.
+- **Data model correction**: `docs/data-model.md`'s `ResumeAnalysis` was
+  missing a rewrite-suggestions field despite Constitution Principle IV
+  and the approved wireframe both calling for one. Added
+  `rewriteSuggestions[]`, explicitly distinct from `TailoringOutput`'s
+  JD-tailored `rewrittenBullets` (feature 004).
+- Reuses feature 002's provider/validation/retry/rate-limit
+  infrastructure rather than re-deciding it.
