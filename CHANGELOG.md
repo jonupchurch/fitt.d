@@ -129,3 +129,16 @@ each completed Spec Kit phase rather than waiting to be asked.
   delivery strategy) — continuing feature 001's `0001`.
 - Flagged for implementation: `.env.example`'s `FITTD_MODEL` needs
   updating from a bare model name to a Gateway-qualified string.
+
+## 2026-07-05 — Feature 002: Job Description Analysis (tasks)
+
+- `specs/002-jd-analysis/tasks.md` — 25 tasks across Setup, Foundational
+  (the full analysis pipeline: schema, prompt, provider wrapper, rate
+  limiter, Server Action), three user-story phases (P1 live skill/
+  keyword preview, P2 seniority/responsibilities/notable signals, P3
+  preview stays fresh on edits), and Polish (a11y coverage, e2e flow
+  test, the three owed ADRs, quickstart validation). Suggested MVP
+  slice is User Story 1 alone — the headline "live keyword-detection
+  preview" value.
+- Tests run against a deterministic fake provider throughout (Principle
+  V pattern) — no real model calls or cost in CI for this feature.
