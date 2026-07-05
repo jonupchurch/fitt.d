@@ -76,3 +76,24 @@ before `/speckit-specify` resumes on feature `001`.
   per `docs/data-model.md` that preview is `JDAnalysis` output (feature
   002), not this feature's — 001 stays scoped to capturing, validating,
   and normalizing raw input only.
+
+## 2026-07-05 — Feature 001: Resume & Job Description Input (plan & tasks)
+
+- `specs/001-resume-jd-input/plan.md`, `research.md`, `contracts/actions.md`,
+  `quickstart.md` — implementation plan for feature 001. Introduces this
+  project's first Server Actions, first Zod-validated data, and first
+  file-parsing dependencies (`unpdf` for PDF, `mammoth` for DOCX).
+  Real Next.js routes (`/analyze/upload`, `/analyze/job`) matching the
+  approved wireframe's URLs were chosen over a single client component,
+  with in-progress wizard state in `sessionStorage` (no database) —
+  see `research.md` for the alternatives considered.
+- **Constitution Check correction**: planning surfaced a genuine
+  architectural decision (parsing-library choice, input-validation/
+  error-model pattern) that Principle I's ADR trigger list covers —
+  updating feature 000's plan note, which had assumed no ADR was needed
+  before feature 002. `docs/adr/0001-resume-jd-input-validation.md` is
+  now a tracked task rather than skipped.
+- `specs/001-resume-jd-input/tasks.md` — 21 tasks across Setup,
+  Foundational, three user-story phases (P1 resume input, P2 job
+  description input, P3 "Try a sample"), and Polish. Suggested MVP
+  slice is User Story 1 alone.
