@@ -255,3 +255,21 @@ each completed Spec Kit phase rather than waiting to be asked.
   consistent with the stateless/ephemeral default — any genuine need
   for storage would be an explicit ADR-documented deviation, decided at
   `/speckit-plan`, not assumed here.
+
+## 2026-07-05 — Feature 005: Side-by-Side Comparison & Export (plan)
+
+- `specs/005-comparison-export/plan.md`, `research.md`,
+  `contracts/actions.md`, `quickstart.md`. **The only MVP feature with
+  no new Server Actions or model calls** — everything it needs already
+  exists in client session state from features 001–004.
+- **Export approach**: PDF via a print stylesheet (`window.print()`),
+  `.docx` via the `docx` package run entirely client-side — both
+  rejected heavier alternatives (a PDF-rendering library, a server-side
+  generation endpoint) as unjustified complexity. `docs/adr/0007`.
+- **Shareable link**: encodes a trimmed summary (score, skill names,
+  rationale) directly in the URL — never raw resume/JD text, both for
+  size and for privacy (URLs get logged in history/server logs/referrer
+  headers). No database row per share. `docs/adr/0008`.
+- Constitution Principle II is explicitly N/A for this feature (no
+  backend to speak of) — same reasoning feature 000 used for its own
+  scaffolding-only scope.
