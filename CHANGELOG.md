@@ -53,6 +53,10 @@ before `/speckit-specify` resumes on feature `001`.
 - `docs/adr/` scaffolded (index + template), empty by design — feature
   000 has no product-architecture tradeoffs of its own; the first real
   ADR arrives with feature 002's LLM-provider abstraction.
-- **Manual step still open**: connecting the GitHub repo to Vercel
-  requires the account owner's one-time OAuth/dashboard action — not
-  completed by the agent (see spec.md Assumptions).
+- **Vercel deploy connected**: the account owner completed the one-time
+  manual step (see spec.md Assumptions) linking this repo to the Vercel
+  project `fitt.d.prod`, live at https://fittdprod.vercel.app/. An
+  earlier dashboard import had briefly created a duplicate
+  `jonupchurch/fitt.d.prod` GitHub repo before the project's Git
+  connection was corrected to point at `jonupchurch/fitt.d`; pushes to
+  `main` now auto-deploy to production directly from this repo.
