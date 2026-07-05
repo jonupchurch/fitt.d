@@ -237,3 +237,21 @@ each completed Spec Kit phase rather than waiting to be asked.
   matched/missing, P2 gap advice, P3 tailored rewrites + Apply);
   Polish (5: a11y, e2e, the ADR, quickstart, CHANGELOG). Suggested MVP
   slice is User Story 1 alone.
+
+## 2026-07-05 — Feature 005: Side-by-Side Comparison & Export (spec)
+
+- `specs/005-comparison-export/spec.md` — the final MVP feature per
+  `docs/data-model.md`: renders a side-by-side resume↔JD comparison
+  (highlighting matches/gaps, reflecting the current `WorkingResumeCopy`
+  from feature 004), lets the candidate export a report (PDF or
+  shareable link) and download the tailored resume as `.docx`, and
+  lets them restart from the job-description step ("Try another job")
+  without re-uploading their resume. Purely compositional — no new
+  domain entities. Four user stories: P1 side-by-side comparison, P2
+  report export, P3 `.docx` download, P4 try-another-job reset.
+  Checklist passed clean.
+- **Persistence note**: shareable links are expected to avoid new
+  server-side storage (e.g. encoding report state directly) to stay
+  consistent with the stateless/ephemeral default — any genuine need
+  for storage would be an explicit ADR-documented deviation, decided at
+  `/speckit-plan`, not assumed here.
