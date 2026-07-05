@@ -176,3 +176,12 @@ each completed Spec Kit phase rather than waiting to be asked.
 - `/analyze/report` becomes the wizard's real second step (Upload →
   Analysis → Job desc. → Match), matching the wireframe's order.
 - One ADR owed during implementation: `docs/adr/0005-resume-parsing-approach.md`.
+
+## 2026-07-05 — Feature 003: Resume Analysis (tasks)
+
+- `specs/003-resume-analysis/tasks.md` — 20 tasks. No Setup phase (no
+  new dependencies); Foundational (7) builds the full pipeline and page
+  shell; three user-story phases (P1 score + ATS checks, P2 section
+  feedback + strengths/weaknesses, P3 rewrite suggestions); Polish (5:
+  a11y, e2e, the ADR, quickstart, CHANGELOG). Suggested MVP slice is
+  User Story 1 alone.
