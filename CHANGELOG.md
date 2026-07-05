@@ -330,3 +330,15 @@ checks green (`typecheck`, `lint`, `test`, `test:e2e`).
 - `next.config.ts` now explicitly traces `evals/fixtures/sample-1/**`
   into the deployed bundle — a dynamic `fs.readFile` call isn't always
   picked up by Vercel's automatic file tracing.
+
+## 2026-07-05 — Future Work log started
+
+- `docs/future-work.md` — per Constitution Principle IV, ideas surfaced
+  mid-build that are out of the current feature's frozen scope get
+  logged here rather than implemented ad hoc. First entry: editing/
+  replacing the resume or job description mid-flow (found while
+  reviewing feature 001) — `/analyze/upload` silently overwrites an
+  existing resume with no confirmation, while `/analyze/job` locks into
+  a read-only state with no way back once submitted. Deferred until the
+  core MVP (000–005) is built, since feature 005's planned "Try another
+  job" reset may already cover most of the real need.
