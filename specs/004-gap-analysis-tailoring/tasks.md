@@ -31,17 +31,17 @@ description: "Task list for feature 004 - Gap Analysis & Tailoring Output"
 
 **⚠️ CRITICAL**: No user story can be implemented until this phase is complete.
 
-- [ ] T001 Define the `GapAnalysis` and `TailoringOutput` Zod schemas in `src/lib/llm/schemas.ts` (shapes per `docs/data-model.md`)
-- [ ] T002 [P] Extend `src/lib/llm/fake-provider.ts` with `gap-analysis` and `bullet-tailoring` fixture entries, plus a fake **streaming** response path (yields chunks before resolving)
-- [ ] T003 [P] Author `prompts/gap-analysis.v1.md` (informed by — not copied from — the reference bundle's draft: evidence-based matching, required-skills-weighted scoring, no inflated matches)
-- [ ] T004 [P] Author `prompts/bullet-tailoring.v1.md` for schema-validated structured streaming output (not raw markdown), with an explicit no-fabrication instruction (spec.md FR-008)
-- [ ] T005 Add a `streamText` + `Output.object` variant to `src/lib/llm/provider.ts` alongside the existing blocking variant, per `research.md`'s confirmed AI SDK v6 API shape (depends on: T001)
-- [ ] T006 Implement `analyzeGap(jdAnalysis, resumeAnalysis)` in `src/lib/llm/analyze-gap.ts`, mirroring `analyze-jd.ts`'s blocking shape (depends on: T001, T003)
-- [ ] T007 Implement `tailorResume(gapAnalysis, resumeAnalysis, jdAnalysis)` in `src/lib/llm/tailor-resume.ts`, using `provider.ts`'s streamed variant, with the whole-stream-restart retry behavior from `research.md` (depends on: T001, T004, T005)
-- [ ] T008 Implement the `analyzeGap` and `tailorResume` Server Actions in `src/app/analyze/match/actions.ts` per `contracts/actions.md`, checking the shared rate limiter before each call (depends on: T006, T007)
-- [ ] T009 [P] Implement `WorkingResumeCopy` client state and `applyBullet()`/`isApplied()` in `src/lib/resume/working-copy.ts`, `sessionStorage`-backed (no Server Action — pure client mutation, per `research.md`)
-- [ ] T010 [P] Extend the wizard progress bar in `src/app/analyze/layout.tsx` to include this feature's step ("Match")
-- [ ] T011 Scaffold the `/analyze/match` page shell in `src/app/analyze/match/page.tsx`: checks `sessionStorage` for both `JDAnalysis` and `ResumeAnalysis`, renders a clear waiting state naming what's pending if either is missing, otherwise triggers `analyzeGap` (depends on: T008, T010)
+- [X] T001 Define the `GapAnalysis` and `TailoringOutput` Zod schemas in `src/lib/llm/schemas.ts` (shapes per `docs/data-model.md`)
+- [X] T002 [P] Extend `src/lib/llm/fake-provider.ts` with `gap-analysis` and `bullet-tailoring` fixture entries, plus a fake **streaming** response path (yields chunks before resolving)
+- [X] T003 [P] Author `prompts/gap-analysis.v1.md` (informed by — not copied from — the reference bundle's draft: evidence-based matching, required-skills-weighted scoring, no inflated matches)
+- [X] T004 [P] Author `prompts/bullet-tailoring.v1.md` for schema-validated structured streaming output (not raw markdown), with an explicit no-fabrication instruction (spec.md FR-008)
+- [X] T005 Add a `streamText` + `Output.object` variant to `src/lib/llm/provider.ts` alongside the existing blocking variant, per `research.md`'s confirmed AI SDK v6 API shape (depends on: T001)
+- [X] T006 Implement `analyzeGap(jdAnalysis, resumeAnalysis)` in `src/lib/llm/analyze-gap.ts`, mirroring `analyze-jd.ts`'s blocking shape (depends on: T001, T003)
+- [X] T007 Implement `tailorResume(gapAnalysis, resumeAnalysis, jdAnalysis)` in `src/lib/llm/tailor-resume.ts`, using `provider.ts`'s streamed variant, with the whole-stream-restart retry behavior from `research.md` (depends on: T001, T004, T005)
+- [X] T008 Implement the `analyzeGap` and `tailorResume` Server Actions in `src/app/analyze/match/actions.ts` per `contracts/actions.md`, checking the shared rate limiter before each call (depends on: T006, T007)
+- [X] T009 [P] Implement `WorkingResumeCopy` client state and `applyBullet()`/`isApplied()` in `src/lib/resume/working-copy.ts`, `sessionStorage`-backed (no Server Action — pure client mutation, per `research.md`)
+- [X] T010 [P] Extend the wizard progress bar in `src/app/analyze/layout.tsx` to include this feature's step ("Match")
+- [X] T011 Scaffold the `/analyze/match` page shell in `src/app/analyze/match/page.tsx`: checks `sessionStorage` for both `JDAnalysis` and `ResumeAnalysis`, renders a clear waiting state naming what's pending if either is missing, otherwise triggers `analyzeGap` (depends on: T008, T010)
 
 **Checkpoint**: The pipeline, working-copy state, and page shell (including the waiting state) exist end-to-end — user story work populates specific panels within it.
 
@@ -55,12 +55,12 @@ description: "Task list for feature 004 - Gap Analysis & Tailoring Output"
 
 ### Tests for User Story 1
 
-- [ ] T012 [P] [US1] Vitest tests for `analyze-gap.ts` covering successful schema validation and the repair-retry path, against the fake provider, in `tests/llm/analyze-gap.test.ts`
+- [X] T012 [P] [US1] Vitest tests for `analyze-gap.ts` covering successful schema validation and the repair-retry path, against the fake provider, in `tests/llm/analyze-gap.test.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T013 [US1] Add the match-score ring, matched/missing skill chips, and keyword coverage to `src/app/analyze/match/page.tsx` — pass/fail conveyed by icon+text (depends on: T011)
-- [ ] T014 [US1] Add the error state (`invalid_model_output` / `provider_unavailable` / `rate_limited`) to the page (depends on: T013)
+- [X] T013 [US1] Add the match-score ring, matched/missing skill chips, and keyword coverage to `src/app/analyze/match/page.tsx` — pass/fail conveyed by icon+text (depends on: T011)
+- [X] T014 [US1] Add the error state (`invalid_model_output` / `provider_unavailable` / `rate_limited`) to the page (depends on: T013)
 
 **Checkpoint**: User Story 1 is fully functional and independently testable.
 
@@ -74,8 +74,8 @@ description: "Task list for feature 004 - Gap Analysis & Tailoring Output"
 
 ### Implementation for User Story 2
 
-- [ ] T015 [US2] Add the rationale and prioritized gap-closing advice display to `src/app/analyze/match/page.tsx` (depends on: T013)
-- [ ] T016 [US2] Vitest test asserting the fit score stays low when core required skills are missing, and that no skill appears as both matched and missing, in `tests/llm/analyze-gap.test.ts` (depends on: T006)
+- [X] T015 [US2] Add the rationale and prioritized gap-closing advice display to `src/app/analyze/match/page.tsx` (depends on: T013)
+- [X] T016 [US2] Vitest test asserting the fit score stays low when core required skills are missing, and that no skill appears as both matched and missing, in `tests/llm/analyze-gap.test.ts` (depends on: T006)
 
 **Checkpoint**: User Stories 1 and 2 both independently functional.
 
@@ -89,11 +89,11 @@ description: "Task list for feature 004 - Gap Analysis & Tailoring Output"
 
 ### Implementation for User Story 3
 
-- [ ] T017 [P] [US3] Vitest tests for `tailor-resume.ts` covering successful streamed schema validation and the whole-stream-restart retry path, against the fake streaming provider, in `tests/llm/tailor-resume.test.ts`
-- [ ] T018 [P] [US3] Vitest tests for `working-copy.ts`'s `applyBullet()`/`isApplied()` mutations in `tests/resume/working-copy.test.ts`
-- [ ] T019 [US3] Add the tailoring panel (rewritten bullets, summary, keywords, cover-letter opener) with a streaming render and Apply buttons to `src/app/analyze/match/page.tsx`, wired to `working-copy.ts` (depends on: T013, T009)
-- [ ] T020 [US3] Add the applied-vs-not-applied visual distinction (icon+text, not color alone) to the tailoring panel (depends on: T019)
-- [ ] T021 [US3] Vitest test asserting tailored content never fabricates experience absent from the source resume, against a fixture, in `tests/llm/tailor-resume.test.ts` (depends on: T007)
+- [X] T017 [P] [US3] Vitest tests for `tailor-resume.ts` covering successful streamed schema validation and the whole-stream-restart retry path, against the fake streaming provider, in `tests/llm/tailor-resume.test.ts`
+- [X] T018 [P] [US3] Vitest tests for `working-copy.ts`'s `applyBullet()`/`isApplied()` mutations in `tests/resume/working-copy.test.ts`
+- [X] T019 [US3] Add the tailoring panel (rewritten bullets, summary, keywords, cover-letter opener) with a streaming render and Apply buttons to `src/app/analyze/match/page.tsx`, wired to `working-copy.ts` (depends on: T013, T009)
+- [X] T020 [US3] Add the applied-vs-not-applied visual distinction (icon+text, not color alone) to the tailoring panel (depends on: T019)
+- [X] T021 [US3] Vitest test asserting tailored content never fabricates experience absent from the source resume, against a fixture, in `tests/llm/tailor-resume.test.ts` (depends on: T007)
 
 **Checkpoint**: All three user stories independently functional — feature complete.
 
@@ -103,11 +103,11 @@ description: "Task list for feature 004 - Gap Analysis & Tailoring Output"
 
 **Purpose**: Wrap-up items spanning all three stories.
 
-- [ ] T022 [P] Extend the accessibility check to cover `/analyze/match`'s states (waiting, populated, error, streaming live-region, applied-vs-not-applied)
-- [ ] T023 Add `e2e/analyze-match.spec.ts`: Playwright test covering the full match → tailoring → apply flow per `quickstart.md`, against the fake provider
-- [ ] T024 [P] Author `docs/adr/0006-tailoring-output-streaming-validation.md`
-- [ ] T025 Run `quickstart.md` end-to-end and confirm every scenario passes
-- [ ] T026 Add a `CHANGELOG.md` entry summarizing feature 004 (Constitution Principle VI), included in the push that closes this feature
+- [X] T022 [P] Extend the accessibility check to cover `/analyze/match`'s states (waiting, populated, error, streaming live-region, applied-vs-not-applied)
+- [X] T023 Add `e2e/analyze-match.spec.ts`: Playwright test covering the full match → tailoring → apply flow per `quickstart.md`, against the fake provider
+- [X] T024 [P] Author `docs/adr/0006-tailoring-output-streaming-validation.md`
+- [X] T025 Run `quickstart.md` end-to-end and confirm every scenario passes
+- [X] T026 Add a `CHANGELOG.md` entry summarizing feature 004 (Constitution Principle VI), included in the push that closes this feature
 
 ---
 

@@ -12,7 +12,7 @@ type Step = {
 
 export function WizardProgress() {
   const pathname = usePathname();
-  const { resume, jobDescription } = useWizard();
+  const { resume, jobDescription, jdAnalysis, resumeAnalysis } = useWizard();
 
   const steps: Step[] = [
     { label: "Upload", href: "/analyze/upload", done: resume !== null },
@@ -21,9 +21,13 @@ export function WizardProgress() {
     // (a resume exists), not that the candidate has viewed it yet.
     { label: "Analysis", href: "/analyze/report", done: resume !== null },
     { label: "Job desc.", href: "/analyze/job", done: jobDescription !== null },
-    // "Match" arrives with feature 004 — shown as an upcoming step so
-    // the full flow is legible from the start.
-    { label: "Match", href: null, done: false },
+    // Same "available, not necessarily viewed" semantic as Analysis —
+    // Match depends on both prior analyses existing (spec.md FR-011).
+    {
+      label: "Match",
+      href: "/analyze/match",
+      done: jdAnalysis !== null && resumeAnalysis !== null,
+    },
   ];
 
   return (

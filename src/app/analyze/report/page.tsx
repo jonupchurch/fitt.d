@@ -239,7 +239,7 @@ function RewriteSuggestions({
 }
 
 export default function ReportPage() {
-  const { resume } = useWizard();
+  const { resume, setResumeAnalysis } = useWizard();
   const [analysis, setAnalysis] = useState<ResumeAnalysis | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -259,6 +259,9 @@ export default function ReportPage() {
           return;
         }
         setAnalysis(result.data);
+        // Persisted so feature 004's /analyze/match can find it without
+        // recomputing — see wizard-state.ts.
+        setResumeAnalysis(result.data);
       });
     }, 0);
 
@@ -266,7 +269,7 @@ export default function ReportPage() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [resume]);
+  }, [resume, setResumeAnalysis]);
 
   const isLoading = resume !== null && analysis === null && error === null;
   const loadingMessage = useLoadingMessage(isLoading);

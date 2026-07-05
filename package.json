@@ -16,6 +16,7 @@
     "eval": "tsx evals/run-evals.ts"
   },
   "dependencies": {
+    "@ai-sdk/react": "^4.0.16",
     "ai": "^7.0.15",
     "mammoth": "^1.12.0",
     "next": "16.2.10",

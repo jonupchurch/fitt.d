@@ -3,7 +3,9 @@ import type { z } from "zod";
 
 const DEFAULT_MODEL = "anthropic/claude-sonnet-5";
 
-function currentModel(): string {
+/** Exported so tailor-resume.ts's streamed call can share the same
+ * model resolution instead of duplicating it. */
+export function currentModel(): string {
   return process.env.FITTD_MODEL ?? DEFAULT_MODEL;
 }
 

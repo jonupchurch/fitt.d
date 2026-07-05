@@ -15,5 +15,6 @@ Format: lightweight [MADR](https://adr.github.io/madr/). Status is one of
 | [0003](0003-llm-output-validation-and-retry.md) | Validate LLM output with Zod and a bounded repair retry (feature 002) | Accepted |
 | [0004](0004-response-delivery-strategy.md) | Skeleton-until-validated for structured output; streaming reserved for prose (feature 002) | Accepted |
 | [0005](0005-resume-parsing-approach.md) | One LLM call for both resume structure and judgment (feature 003) | Accepted |
+| [0006](0006-tailoring-output-streaming-validation.md) | Schema-validated streaming for tailoring output via a Route Handler + `useObject` (feature 004) | Accepted |
 
 New decision? Copy `0000-template.md`.

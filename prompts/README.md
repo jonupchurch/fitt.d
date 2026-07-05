@@ -24,3 +24,5 @@ files, not inline strings** (Constitution Principle II).
 |---|---|---|
 | `jd-analysis.v1.md` | Extract structured signal from a job description | `JDAnalysis` |
 | `resume-analysis.v1.md` | Parse and judge a resume's structure and quality | `ResumeAnalysis` |
+| `gap-analysis.v1.md` | Compare a resume analysis against a job description analysis | `GapAnalysis` |
+| `bullet-tailoring.v1.md` | Tailor resume content to a specific job (schema-validated streaming) | `TailoringOutput` |

@@ -19,6 +19,12 @@ const nextConfig: NextConfig = {
     // own versioned prompt file:
     "/analyze/job": ["./prompts/**"],
     "/analyze/report": ["./prompts/**"],
+    // analyzeGap() (src/lib/llm/analyze-gap.ts) reads its prompt from
+    // the /analyze/match Server Action; tailorResumeResponse()
+    // (src/lib/llm/tailor-resume.ts) reads its own from the Route
+    // Handler at /api/tailor-resume:
+    "/analyze/match": ["./prompts/**"],
+    "/api/tailor-resume": ["./prompts/**"],
   },
 };
 

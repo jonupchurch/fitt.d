@@ -68,6 +68,13 @@ Output of comparing `JDAnalysis` + `ResumeAnalysis` (feature 004).
 - `missingSkills[]` — `{ skill, priority: must-have | worth-adding | minor }`
 - `keywordCoverage` — `{ covered[], missing[] }`
 - `rationale` — why this score
+- `closingAdvice[]` — `{ skill, suggestion }[]`, prioritized (most
+  impactful first), each tied to a specific missing/weak skill. Added
+  during feature 004 implementation: spec.md FR-006 requires
+  "prioritized, specific gap-closing advice" as its own deliverable,
+  distinct from `rationale` (a single explanatory string) — this field
+  was missing until now, the same class of correction as feature 003's
+  `rewriteSuggestions` addition.
 
 ### `TailoringOutput`
 Generated from `GapAnalysis` (feature 004).

@@ -464,3 +464,51 @@ error instead of just returning a typed result).
   progress bar (new `animate-indeterminate` keyframe in
   `globals.css`) — a single static screen-reader announcement covers
   the wait without re-announcing on every message change.
+
+## 2026-07-05 — Feature 004: Gap Analysis & Tailoring Output (implemented)
+
+All 26 tasks complete, full quality bar green (`typecheck`, `lint`,
+`test` — 47 passing, `test:e2e` — 39 passing, `eval`, `build`).
+
+- New `/analyze/match` screen — the wizard's fourth step — shows a fit
+  score ring, matched skills (with evidence), missing skills (with
+  priority), ATS keyword coverage, a plain-language rationale, and
+  prioritized gap-closing advice, comparing the resume and job
+  description analyses from features 002/003. A clear waiting state
+  names whichever prerequisite analysis hasn't finished yet, rather
+  than erroring or showing a broken partial result.
+- Below that, tailored bullet rewrites, a rewritten summary, keywords
+  to weave in, and a cover-letter opener stream in for perceived speed,
+  each rewrite applicable with one click into a session-scoped working
+  copy of the resume (`src/lib/resume/working-copy.ts`) — applied
+  suggestions are visibly marked, and the originally analyzed resume is
+  never mutated.
+- **Retrofitted a real gap**: neither `JDAnalysis` nor `ResumeAnalysis`
+  was ever persisted anywhere — each lived only in local page state and
+  was discarded on navigation, even though this feature's own contract
+  assumed both would already be available client-side. Extended
+  `wizard-state.ts`/`wizard-context.tsx` to persist both (mirroring the
+  existing `Resume`/`JobDescription` pattern), with replacing a resume
+  or job description correctly invalidating its now-stale analysis.
+- **A real architecture correction, not just a plan detail**: the
+  tailoring call needed schema-validated *streaming*. The plan's own
+  contract sketched this as a Server Action returning a raw stream, but
+  verifying the actual installed AI SDK (`ai@7.0.15`,
+  `node_modules/ai/docs/`) showed that pattern depends on `@ai-sdk/rsc`,
+  which the SDK's own docs mark experimental and explicitly steer away
+  from for production. The real, current, production-recommended path
+  is a Route Handler (`/api/tailor-resume`) paired with the
+  `experimental_useObject` hook (new `@ai-sdk/react` dependency,
+  version-matched to `ai@7.0.15`) — confirmed by reading the hook's own
+  source, which genuinely runs `safeValidateTypes` against the schema
+  on the complete streamed object, not just TypeScript-level typing.
+  Full reasoning in `docs/adr/0006-tailoring-output-streaming-validation.md`.
+  The "restart the whole stream once on validation failure" retry this
+  feature requires lives client-side as a result, since a stream can't
+  be repaired mid-flight the way a blocking call can.
+- Reuses the shared rate limiter and Zod-validation/retry pattern from
+  features 002/003 for the blocking half (gap analysis); adds a
+  `devFakeGapAnalysis` fake-provider path plus a `GAP_TRIGGER` marker
+  (embedded via a JD text phrase, propagated through the stored
+  `JDAnalysis`) so both the gap-analysis and tailoring error paths are
+  reachable through the real UI in e2e tests, not just unit tests.

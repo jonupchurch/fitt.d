@@ -1,5 +1,5 @@
 import type { ProviderResult } from "./provider";
-import type { JDAnalysis, ResumeAnalysis } from "./schemas";
+import type { GapAnalysis, JDAnalysis, ResumeAnalysis } from "./schemas";
 
 export type FakeTaskId = "jd-analysis" | "resume-analysis";
 
@@ -94,18 +94,55 @@ export function devFakeAnalysis(
   }
 
   if (taskId === "jd-analysis") {
-    return {
-      ok: true,
-      data: {
-        ...JD_DEV_FIXTURE,
-        notableSignals: text.toLowerCase().includes("kubernetes")
-          ? ["Mentions Kubernetes"]
-          : [],
-      },
-    };
+    const lower = text.toLowerCase();
+    const notableSignals: string[] = [];
+    if (lower.includes("kubernetes")) notableSignals.push("Mentions Kubernetes");
+    // Lets e2e tests reach feature 004's gap-analysis error path through
+    // the real UI (paste a JD containing this phrase) rather than a
+    // sessionStorage hack — see devFakeGapAnalysis below.
+    if (lower.includes("trigger_gap_fake_error")) notableSignals.push("GAP_TRIGGER");
+    return { ok: true, data: { ...JD_DEV_FIXTURE, notableSignals } };
   }
 
   return { ok: true, data: RESUME_DEV_FIXTURE };
+}
+
+const GAP_DEV_FIXTURE: GapAnalysis = {
+  fitScore: 68,
+  matchedSkills: [
+    {
+      skill: "React",
+      evidence: "5 years of React experience listed in the summary and experience section.",
+    },
+    { skill: "TypeScript", evidence: "Listed under skills." },
+  ],
+  missingSkills: [{ skill: "Next.js", priority: "worth-adding" }],
+  keywordCoverage: { covered: ["react", "typescript"], missing: ["next.js"] },
+  rationale:
+    "Strong overlap on core required skills, with one nice-to-have skill not yet demonstrated.",
+  closingAdvice: [
+    {
+      skill: "Next.js",
+      suggestion:
+        "Mention any App Router/SSR framework experience, even outside Next.js specifically, to show framework-agnostic full-stack familiarity.",
+    },
+  ],
+};
+
+/**
+ * Fake path for `analyzeGap` (feature 004) — a companion to
+ * devFakeAnalysis above, kept separate since gap analysis takes two
+ * structured objects as input rather than raw text. Fails when the
+ * stored JDAnalysis carries the "GAP_TRIGGER" notable signal (see
+ * devFakeAnalysis's jd-analysis branch).
+ */
+export function devFakeGapAnalysis(
+  jdAnalysis: JDAnalysis,
+): ProviderResult<GapAnalysis> {
+  if (jdAnalysis.notableSignals.includes("GAP_TRIGGER")) {
+    return { ok: false, reason: "invalid_output" };
+  }
+  return { ok: true, data: GAP_DEV_FIXTURE };
 }
 
 type Queued<T> =

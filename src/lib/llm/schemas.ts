@@ -86,11 +86,54 @@ export const ResumeAnalysisSchema = z.object({
 
 export type ResumeAnalysis = z.infer<typeof ResumeAnalysisSchema>;
 
+/** Shape per docs/data-model.md's `GapAnalysis` entity. */
+export const GapAnalysisSchema = z.object({
+  fitScore: z.number().min(0).max(100),
+  matchedSkills: z.array(
+    z.object({ skill: z.string(), evidence: z.string() }),
+  ),
+  missingSkills: z.array(
+    z.object({
+      skill: z.string(),
+      priority: z.enum(["must-have", "worth-adding", "minor"]),
+    }),
+  ),
+  keywordCoverage: z.object({
+    covered: z.array(z.string()),
+    missing: z.array(z.string()),
+  }),
+  rationale: z.string(),
+  // See docs/data-model.md — added during feature 004 to satisfy FR-006
+  // (prioritized, specific gap-closing advice), distinct from `rationale`.
+  closingAdvice: z.array(
+    z.object({ skill: z.string(), suggestion: z.string() }),
+  ),
+});
+
+export type GapAnalysis = z.infer<typeof GapAnalysisSchema>;
+
+/** Shape per docs/data-model.md's `TailoringOutput` entity. */
+export const TailoringOutputSchema = z.object({
+  rewrittenBullets: z.array(
+    z.object({
+      original: z.string(),
+      rewritten: z.string(),
+      whyStronger: z.string(),
+    }),
+  ),
+  rewrittenSummary: z.string(),
+  keywordsToWeave: z.array(z.string()),
+  coverLetterOpener: z.string(),
+});
+
+export type TailoringOutput = z.infer<typeof TailoringOutputSchema>;
+
 export type AnalysisErrorCode =
   | "rate_limited"
   | "invalid_model_output"
   | "provider_unavailable"
-  | "empty_input";
+  | "empty_input"
+  | "missing_prerequisite";
 
 export type AnalysisError = {
   code: AnalysisErrorCode;

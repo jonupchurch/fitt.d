@@ -47,7 +47,7 @@ function ChipGroup({
 }
 
 export default function JobDescriptionPage() {
-  const { setJobDescription, jobDescription } = useWizard();
+  const { setJobDescription, jobDescription, setJdAnalysis } = useWizard();
   const [text, setText] = useState("");
   const [title, setTitle] = useState("");
   const [company, setCompany] = useState("");
@@ -99,6 +99,9 @@ export default function JobDescriptionPage() {
             setPreview(result.data);
             setPreviewStatus("idle");
             setPreviewError(null);
+            // Persisted so feature 004's /analyze/match can find it
+            // without recomputing — see wizard-state.ts.
+            setJdAnalysis(result.data);
           },
         );
       },
@@ -106,7 +109,7 @@ export default function JobDescriptionPage() {
     );
 
     return () => clearTimeout(timer);
-  }, [text, runLatestOnly]);
+  }, [text, runLatestOnly, setJdAnalysis]);
 
   async function handleSubmit() {
     setIsSubmitting(true);
