@@ -227,3 +227,13 @@ each completed Spec Kit phase rather than waiting to be asked.
 - Adds a waiting/pending state for when a candidate reaches this
   screen before both prerequisite analyses (002, 003) have completed —
   the first feature with a real cross-feature runtime dependency.
+
+## 2026-07-05 — Feature 004: Gap Analysis & Tailoring Output (tasks)
+
+- `specs/004-gap-analysis-tailoring/tasks.md` — 26 tasks. No Setup
+  phase; Foundational (11) builds the gap-analysis + tailoring
+  pipeline, the `WorkingResumeCopy` state module, and the page shell
+  with its waiting state; three user-story phases (P1 fit score +
+  matched/missing, P2 gap advice, P3 tailored rewrites + Apply);
+  Polish (5: a11y, e2e, the ADR, quickstart, CHANGELOG). Suggested MVP
+  slice is User Story 1 alone.
