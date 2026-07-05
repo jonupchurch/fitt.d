@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+/*
+ * Fitt.d brand tokens — copied verbatim from Resources/fittd-brand-guide.md.
+ * Tailwind v4 turns every --color-* var below into utilities (bg-brand,
+ * text-ink, border-n-200, etc.) automatically.
+ */
+@theme {
+  --color-brand: #08b6d0;
+  --color-brand-strong: #0c7383;
+  --color-brand-hover: #105c69;
+
+  --color-cyan-50: #e6fafd;
+  --color-cyan-100: #c3f2f9;
+  --color-cyan-200: #8fe7f1;
+  --color-cyan-300: #52d6e6;
+  --color-cyan-400: #1fc2d6;
+  --color-cyan-500: #08b6d0;
+  --color-cyan-600: #0a8fa6;
+  --color-cyan-700: #0c7383;
+  --color-cyan-800: #105c69;
+  --color-cyan-900: #124b56;
+
+  --color-ink: #0b1f2a;
+  --color-ink-700: #1b3743;
+  --color-ink-600: #2e4753;
+
+  --color-coral-400: #ff8a7e;
+  --color-coral-500: #ff6f61;
+  --color-coral-600: #e85a4c;
+
+  --color-n-50: #f7f9fa;
+  --color-n-100: #eef2f4;
+  --color-n-200: #dfe6e9;
+  --color-n-300: #c7d0d4;
+  --color-n-400: #9da9ae;
+  --color-n-500: #717d83;
+  --color-n-600: #515d63;
+  --color-n-700: #3a454b;
+  --color-n-800: #232d33;
+  --color-n-900: #0f1a20;
+
+  --color-success: #12b886;
+  --color-warning: #f5a524;
+  --color-danger: #e5484d;
+
+  /* Wordmark/display: Manrope. Body/UI: Inter. Both bound to next/font
+     variables in layout.tsx. Mono: system stack, no font file needed. */
+  --font-display: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+
+/*
+ * Dark mode is an explicit open decision (see Resources/design.md), not yet
+ * designed — this feature ships light-mode only. Do not add a
+ * prefers-color-scheme override until that decision is made.
+ */
+body {
+  background: var(--color-n-50);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
