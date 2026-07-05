@@ -24,3 +24,35 @@ Complements `git log` and the Spec Kit artifacts (`.specify/memory/constitution.
 - `docs: require CHANGELOG.md updates in the constitution` — ratified
   Fitt.d constitution v1.3.0, amending Principle VI (Legible History) to
   MUST-require a CHANGELOG.md entry alongside every significant push.
+
+## 2026-07-05 — Feature 000: Project Setup (session 0)
+
+Specified, planned, tasked, and implemented as an explicit exception to
+the "plan everything, then implement" workflow agreed for this project —
+session 0 is infrastructure, not product, so it was built to completion
+before `/speckit-specify` resumes on feature `001`.
+
+- `specs/000-project-setup/` — spec, plan, research, quickstart, and
+  tasks for the session-0 infrastructure feature. Constitution Check
+  during planning caught a real gap (Principle III's accessibility gate
+  was missing from the original CI requirement) and corrected the spec
+  before implementation, per Principle I.
+- `docs/data-model.md`, `docs/non-functional.md` — repo-level shared
+  references so the five upcoming product features (001–005) don't
+  redefine the same entities or NFR budgets independently.
+- Next.js 16 (App Router) + TypeScript strict + npm scaffold, with
+  Tailwind v4 wired to the Fitt.d brand tokens (`Resources/fittd-brand-guide.md`)
+  and Manrope/Inter via `next/font`.
+- Vitest (unit), Playwright (e2e), and an axe accessibility check are all
+  wired into `npm run test` / `test:e2e`, plus a GitHub Actions CI
+  workflow (`.github/workflows/ci.yml`) running typecheck, lint, test,
+  eval, and accessibility on every push.
+- An eval harness skeleton (`evals/run-evals.ts`, `evals/scorers.ts`)
+  that exits cleanly with zero fixtures — ready for features 004/005 to
+  fill in without touching CI config.
+- `docs/adr/` scaffolded (index + template), empty by design — feature
+  000 has no product-architecture tradeoffs of its own; the first real
+  ADR arrives with feature 002's LLM-provider abstraction.
+- **Manual step still open**: connecting the GitHub repo to Vercel
+  requires the account owner's one-time OAuth/dashboard action — not
+  completed by the agent (see spec.md Assumptions).
