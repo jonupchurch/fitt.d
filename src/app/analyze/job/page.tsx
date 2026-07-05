@@ -247,7 +247,7 @@ export default function JobDescriptionPage() {
           ) : null}
 
           {previewStatus === "error" ? (
-            <p role="alert" className="text-sm font-medium text-danger">
+            <p role="alert" className="text-sm font-medium text-danger-strong">
               {previewError}
             </p>
           ) : null}
@@ -307,7 +307,7 @@ export default function JobDescriptionPage() {
       ) : null}
 
       {error ? (
-        <p role="alert" className="text-sm font-medium text-danger">
+        <p role="alert" className="text-sm font-medium text-danger-strong">
           {error}
         </p>
       ) : null}

@@ -14,9 +14,11 @@ const nextConfig: NextConfig = {
   // loadSampleFixture() (src/lib/input/sample-fixture.ts):
   outputFileTracingIncludes: {
     "/": ["./evals/fixtures/sample-1/**"],
-    // analyzeJobDescription() (src/lib/llm/analyze-jd.ts) reads its
-    // versioned prompt file:
+    // analyzeJobDescription() (src/lib/llm/analyze-jd.ts) and
+    // analyzeResume() (src/lib/llm/analyze-resume.ts) each read their
+    // own versioned prompt file:
     "/analyze/job": ["./prompts/**"],
+    "/analyze/report": ["./prompts/**"],
   },
 };
 

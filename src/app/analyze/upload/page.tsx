@@ -164,7 +164,7 @@ export default function UploadPage() {
       />
 
       {error ? (
-        <p role="alert" className="text-sm font-medium text-danger">
+        <p role="alert" className="text-sm font-medium text-danger-strong">
           {error}
         </p>
       ) : null}

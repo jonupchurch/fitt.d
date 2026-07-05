@@ -401,3 +401,43 @@ change it).
 - 4 new Playwright tests cover editing, canceling, replacing, and
   progress-bar navigation. All 22 e2e tests, 32 Vitest tests,
   typecheck, lint, eval, and build remain green.
+
+## 2026-07-05 — Feature 003: Resume Analysis (implemented)
+
+All 20 tasks complete, full quality bar green (`typecheck`, `lint`,
+`test` — 37 passing, `test:e2e` — 31 passing, `eval`, `build`).
+
+- New `/analyze/report` screen — the wizard's real second step (Upload
+  → **Analysis** → Job desc. → Match) — shows an overall score ring,
+  a pass/fail ATS/formatting checklist, section-by-section feedback
+  (accordion rows, a missing section shown as "Not found" rather than
+  omitted), strengths/weaknesses, and before/after rewrite suggestions
+  with copy-to-clipboard. Fully populated with no job description ever
+  provided, and never blocks proceeding to the next step.
+- Reuses feature 002's provider/Zod-validation/repair-retry/rate-limit
+  infrastructure wholesale (`src/lib/llm/analyze-resume.ts` mirrors
+  `analyze-jd.ts` file-for-file) — the one new architectural call is
+  using a single LLM call for both resume structural parsing and
+  quality judgment rather than a separate deterministic parser stage,
+  documented in `docs/adr/0005-resume-parsing-approach.md`. Resume and
+  job-description analysis share one rate-limit budget, per
+  `docs/non-functional.md`.
+- Generalized `src/lib/llm/fake-provider.ts`'s dev/e2e fake (previously
+  inlined and JD-only) into a `devFakeAnalysis(taskId, text)` helper
+  keyed by task id, so every future analysis feature can reuse it
+  without re-inventing the magic-phrase/fixture mechanism.
+- Two real accessibility bugs found and fixed by the new a11y tests,
+  same class of issue as feature 002's `bg-brand`/`text-brand` fix:
+  `text-danger` (#e5484d) and `text-warning` (#f5a524) both fail WCAG
+  AA for text on light backgrounds. Added `danger-strong`/
+  `warning-strong` tokens and swapped every readable use project-wide
+  (not just the new page) — this had been silently broken in features
+  001/002 too, just never exercised by an a11y test against an error
+  state until now.
+- Fixed e2e flakiness: the shared per-IP rate limiter keys on
+  `x-forwarded-for`, which is absent for local requests, so every
+  parallel Playwright worker was hammering one shared "unknown"
+  bucket — `/analyze/report`'s automatic on-load analysis call tipped
+  this over the default 6/minute limit under 16-way parallelism.
+  Playwright's dev server now sets `FITTD_RATE_LIMIT_PER_MINUTE=1000`
+  (the real limiting behavior stays covered by `rate-limit.test.ts`).

@@ -49,7 +49,7 @@ Output of parsing/analyzing a `Resume` (feature 003).
 - `sections` — parsed structure: contact info, summary, experience[]
   (role, company, dates, bullets[]), skills[], education[]
 - `atsChecks[]` — formatting/parseability pass-fail checks
-- `sectionFeedback[]` — per-section status (`strong | needs-work | review`) + notes
+- `sectionFeedback[]` — per-section status (`strong | needs-work | review | not-found`) + notes
 - `strengths[]`, `weaknesses[]`
 - `overallScore` — resume-quality score/grade, independent of any JD
 - `rewriteSuggestions[]` — `{ section, original, suggested, whyStronger }`,

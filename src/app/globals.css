@@ -42,7 +42,15 @@
 
   --color-success: #12b886;
   --color-warning: #f5a524;
+  /* #f5a524 fails WCAG AA (2.04:1) for text on white — same class of
+     issue as brand/brand-strong. Use this for any readable warning
+     text/border-with-text. */
+  --color-warning-strong: #92400e;
   --color-danger: #e5484d;
+  /* #e5484d fails WCAG AA (3.7:1) for text on the light n-50/white
+     backgrounds error messages sit on — same class of issue as
+     brand/brand-strong. Use this for any readable danger text. */
+  --color-danger-strong: #b91c1c;
 
   /* Wordmark/display: Manrope. Body/UI: Inter. Both bound to next/font
      variables in layout.tsx. Mono: system stack, no font file needed. */

@@ -16,10 +16,13 @@ export function WizardProgress() {
 
   const steps: Step[] = [
     { label: "Upload", href: "/analyze/upload", done: resume !== null },
-    // "Analysis" and "Match" arrive with features 003/004 — shown as
-    // upcoming steps so the full flow is legible from the start.
-    { label: "Analysis", href: null, done: false },
+    // Unlike Upload/Job desc., this step has no input of its own to
+    // submit — "done" here means the analysis is available to view
+    // (a resume exists), not that the candidate has viewed it yet.
+    { label: "Analysis", href: "/analyze/report", done: resume !== null },
     { label: "Job desc.", href: "/analyze/job", done: jobDescription !== null },
+    // "Match" arrives with feature 004 — shown as an upcoming step so
+    // the full flow is legible from the start.
     { label: "Match", href: null, done: false },
   ];
 

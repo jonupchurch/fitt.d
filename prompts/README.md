@@ -23,3 +23,4 @@ files, not inline strings** (Constitution Principle II).
 | File | Purpose | Output schema |
 |---|---|---|
 | `jd-analysis.v1.md` | Extract structured signal from a job description | `JDAnalysis` |
+| `resume-analysis.v1.md` | Parse and judge a resume's structure and quality | `ResumeAnalysis` |

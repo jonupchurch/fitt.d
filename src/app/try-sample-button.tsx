@@ -43,7 +43,7 @@ export function TrySampleButton() {
         {isLoading ? "Loading sample…" : "Try a sample"}
       </button>
       {error ? (
-        <p role="alert" className="text-xs font-medium text-danger">
+        <p role="alert" className="text-xs font-medium text-danger-strong">
           {error}
         </p>
       ) : null}

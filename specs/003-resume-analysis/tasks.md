@@ -31,13 +31,13 @@ description: "Task list for feature 003 - Resume Analysis"
 
 **⚠️ CRITICAL**: No user story can be implemented until this phase is complete.
 
-- [ ] T001 Define the `ResumeAnalysis` Zod schema in `src/lib/llm/schemas.ts` (shape per `docs/data-model.md`, including the `rewriteSuggestions` field added during this feature's spec)
-- [ ] T002 [P] Generalize `src/lib/llm/fake-provider.ts` to be keyed by task id (`jd-analysis` | `resume-analysis`) rather than JD-only, adding a resume-analysis fixture response
-- [ ] T003 [P] Author `prompts/resume-analysis.v1.md` (versioned prompt; content informed by — not copied from — the reference bundle's draft resume-parse prompt), instructing the model to omit rather than invent unsupported content (spec.md FR-008)
-- [ ] T004 Implement `analyzeResume(text)` in `src/lib/llm/analyze-resume.ts`, mirroring `analyze-jd.ts` exactly and calling the unchanged `provider.ts` (depends on: T001, T003)
-- [ ] T005 Implement the `analyzeResume` Server Action in `src/app/analyze/report/actions.ts` per `contracts/actions.md`, checking the shared, unchanged rate limiter before calling T004 (depends on: T004)
-- [ ] T006 [P] Extend the wizard progress bar in `src/app/analyze/layout.tsx` to include this feature's step ("Analysis") between Upload and Job desc., per the wireframe's order
-- [ ] T007 Scaffold the `/analyze/report` page shell in `src/app/analyze/report/page.tsx`: triggers `analyzeResume` once a resume exists, with a skeleton loading state and brand-tokened layout matching Screen 03 (depends on: T005, T006)
+- [X] T001 Define the `ResumeAnalysis` Zod schema in `src/lib/llm/schemas.ts` (shape per `docs/data-model.md`, including the `rewriteSuggestions` field added during this feature's spec)
+- [X] T002 [P] Generalize `src/lib/llm/fake-provider.ts` to be keyed by task id (`jd-analysis` | `resume-analysis`) rather than JD-only, adding a resume-analysis fixture response
+- [X] T003 [P] Author `prompts/resume-analysis.v1.md` (versioned prompt; content informed by — not copied from — the reference bundle's draft resume-parse prompt), instructing the model to omit rather than invent unsupported content (spec.md FR-008)
+- [X] T004 Implement `analyzeResume(text)` in `src/lib/llm/analyze-resume.ts`, mirroring `analyze-jd.ts` exactly and calling the unchanged `provider.ts` (depends on: T001, T003)
+- [X] T005 Implement the `analyzeResume` Server Action in `src/app/analyze/report/actions.ts` per `contracts/actions.md`, checking the shared, unchanged rate limiter before calling T004 (depends on: T004)
+- [X] T006 [P] Extend the wizard progress bar in `src/app/analyze/layout.tsx` to include this feature's step ("Analysis") between Upload and Job desc., per the wireframe's order
+- [X] T007 Scaffold the `/analyze/report` page shell in `src/app/analyze/report/page.tsx`: triggers `analyzeResume` once a resume exists, with a skeleton loading state and brand-tokened layout matching Screen 03 (depends on: T005, T006)
 
 **Checkpoint**: The analysis pipeline and page shell exist end-to-end — user story work is populating specific panels within it.
 
@@ -51,12 +51,12 @@ description: "Task list for feature 003 - Resume Analysis"
 
 ### Tests for User Story 1
 
-- [ ] T008 [P] [US1] Vitest tests for `analyze-resume.ts` covering successful schema validation and the repair-retry path, against the fake provider, in `tests/llm/analyze-resume.test.ts`
+- [X] T008 [P] [US1] Vitest tests for `analyze-resume.ts` covering successful schema validation and the repair-retry path, against the fake provider, in `tests/llm/analyze-resume.test.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T009 [US1] Add the score ring and ATS/formatting checklist to `src/app/analyze/report/page.tsx` — pass/fail conveyed by icon+text (not color alone), score ring given a text alternative for screen readers (depends on: T007)
-- [ ] T010 [US1] Add the error state (`invalid_model_output` / `provider_unavailable` / `rate_limited`) to the report page — clear, non-blocking, brand-tokened (depends on: T009)
+- [X] T009 [US1] Add the score ring and ATS/formatting checklist to `src/app/analyze/report/page.tsx` — pass/fail conveyed by icon+text (not color alone), score ring given a text alternative for screen readers (depends on: T007)
+- [X] T010 [US1] Add the error state (`invalid_model_output` / `provider_unavailable` / `rate_limited`) to the report page — clear, non-blocking, brand-tokened (depends on: T009)
 
 **Checkpoint**: User Story 1 is fully functional and independently testable.
 
@@ -70,9 +70,9 @@ description: "Task list for feature 003 - Resume Analysis"
 
 ### Implementation for User Story 2
 
-- [ ] T011 [US2] Add section-by-section feedback rows (status + note per section; a section not found in the resume shown as such; accordion on mobile) to `src/app/analyze/report/page.tsx` (depends on: T009)
-- [ ] T012 [US2] Add strengths and weaknesses lists to the same page (depends on: T009)
-- [ ] T013 [US2] Vitest test asserting a resume missing an expected section (e.g. no education) is reflected as "not found" rather than omitted, against the fake provider, in `tests/llm/analyze-resume.test.ts` (depends on: T004)
+- [X] T011 [US2] Add section-by-section feedback rows (status + note per section; a section not found in the resume shown as such; accordion on mobile) to `src/app/analyze/report/page.tsx` (depends on: T009)
+- [X] T012 [US2] Add strengths and weaknesses lists to the same page (depends on: T009)
+- [X] T013 [US2] Vitest test asserting a resume missing an expected section (e.g. no education) is reflected as "not found" rather than omitted, against the fake provider, in `tests/llm/analyze-resume.test.ts` (depends on: T004)
 
 **Checkpoint**: User Stories 1 and 2 both independently functional.
 
@@ -86,8 +86,8 @@ description: "Task list for feature 003 - Resume Analysis"
 
 ### Implementation for User Story 3
 
-- [ ] T014 [US3] Add the rewrite-suggestion before/after panel (with copy-to-clipboard per suggestion) to `src/app/analyze/report/page.tsx` (depends on: T009)
-- [ ] T015 [US3] Vitest test asserting no fabricated suggestion appears when the fake provider's fixture has no identifiably weak bullets (spec.md FR-008), in `tests/llm/analyze-resume.test.ts` (depends on: T004)
+- [X] T014 [US3] Add the rewrite-suggestion before/after panel (with copy-to-clipboard per suggestion) to `src/app/analyze/report/page.tsx` (depends on: T009)
+- [X] T015 [US3] Vitest test asserting no fabricated suggestion appears when the fake provider's fixture has no identifiably weak bullets (spec.md FR-008), in `tests/llm/analyze-resume.test.ts` (depends on: T004)
 
 **Checkpoint**: All three user stories independently functional — feature complete.
 
@@ -97,11 +97,11 @@ description: "Task list for feature 003 - Resume Analysis"
 
 **Purpose**: Wrap-up items spanning all three stories.
 
-- [ ] T016 [P] Extend the accessibility check to cover `/analyze/report`'s states (skeleton, populated, error, accordion expanded/collapsed)
-- [ ] T017 Add `e2e/analyze-report.spec.ts`: Playwright test covering the full report flow per `quickstart.md`, against the fake provider
-- [ ] T018 [P] Author `docs/adr/0005-resume-parsing-approach.md`
-- [ ] T019 Run `quickstart.md` end-to-end and confirm every scenario passes
-- [ ] T020 Add a `CHANGELOG.md` entry summarizing feature 003 (Constitution Principle VI), included in the push that closes this feature
+- [X] T016 [P] Extend the accessibility check to cover `/analyze/report`'s states (skeleton, populated, error, accordion expanded/collapsed)
+- [X] T017 Add `e2e/analyze-report.spec.ts`: Playwright test covering the full report flow per `quickstart.md`, against the fake provider
+- [X] T018 [P] Author `docs/adr/0005-resume-parsing-approach.md`
+- [X] T019 Run `quickstart.md` end-to-end and confirm every scenario passes
+- [X] T020 Add a `CHANGELOG.md` entry summarizing feature 003 (Constitution Principle VI), included in the push that closes this feature
 
 ---
 
