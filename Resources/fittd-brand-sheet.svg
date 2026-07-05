@@ -1,0 +1,134 @@
+<svg width="1040" height="760" viewBox="0 0 1040 760" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Fitt.d brand sheet">
+  <defs>
+    <linearGradient id="fittdCyan" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#12C6DE"/>
+      <stop offset="1" stop-color="#0894A8"/>
+    </linearGradient>
+    <style>
+      .h { font-family: Manrope,'Inter','Segoe UI',system-ui,sans-serif; font-weight:800; }
+      .l { font-family: Manrope,'Inter','Segoe UI',system-ui,sans-serif; font-weight:700; }
+      .m { font-family: 'Inter','Segoe UI',system-ui,sans-serif; font-weight:600; }
+      .c { font-family: ui-monospace,'SFMono-Regular',Menlo,monospace; font-weight:500; }
+    </style>
+  </defs>
+
+  <rect width="1040" height="760" fill="#F7F9FA"/>
+
+  <!-- Header -->
+  <text x="48" y="64" class="h" font-size="34" fill="#0B1F2A">Fitt<tspan fill="#08B6D0">.</tspan>d</text>
+  <text x="48" y="92" class="m" font-size="15" fill="#515D63">Brand identity — logo &amp; color system</text>
+  <line x1="48" y1="112" x2="992" y2="112" stroke="#DFE6E9" stroke-width="1"/>
+
+  <!-- Primary lockup -->
+  <text x="48" y="150" class="m" font-size="12" fill="#717D83" letter-spacing="1">PRIMARY LOCKUP</text>
+  <g transform="translate(44,168)">
+    <g transform="translate(0,0) scale(0.1015625)">
+      <rect x="32" y="32" width="448" height="448" rx="120" fill="url(#fittdCyan)"/>
+      <g fill="#FFFFFF">
+        <rect x="182" y="150" width="56" height="232" rx="16"/>
+        <rect x="182" y="150" width="176" height="56" rx="16"/>
+        <rect x="182" y="252" width="140" height="52" rx="16"/>
+      </g>
+      <circle cx="338" cy="356" r="28" fill="#FF6F61"/>
+    </g>
+    <text x="66" y="42" class="l" font-size="40" letter-spacing="-1"><tspan fill="#0B1F2A">Fitt</tspan><tspan fill="#08B6D0">.</tspan><tspan fill="#0B1F2A">d</tspan></text>
+  </g>
+
+  <!-- Icon + reversed -->
+  <text x="360" y="150" class="m" font-size="12" fill="#717D83" letter-spacing="1">ICON</text>
+  <g transform="translate(360,160) scale(0.1484375)">
+    <rect x="32" y="32" width="448" height="448" rx="120" fill="url(#fittdCyan)"/>
+    <g fill="#FFFFFF">
+      <rect x="182" y="150" width="56" height="232" rx="16"/>
+      <rect x="182" y="150" width="176" height="56" rx="16"/>
+      <rect x="182" y="252" width="140" height="52" rx="16"/>
+    </g>
+    <circle cx="338" cy="356" r="28" fill="#FF6F61"/>
+  </g>
+
+  <text x="470" y="150" class="m" font-size="12" fill="#717D83" letter-spacing="1">REVERSED (on ink)</text>
+  <rect x="470" y="160" width="300" height="78" rx="14" fill="#0B1F2A"/>
+  <g transform="translate(486,176) scale(0.09375)">
+    <rect x="32" y="32" width="448" height="448" rx="120" fill="url(#fittdCyan)"/>
+    <g fill="#FFFFFF">
+      <rect x="182" y="150" width="56" height="232" rx="16"/>
+      <rect x="182" y="150" width="176" height="56" rx="16"/>
+      <rect x="182" y="252" width="140" height="52" rx="16"/>
+    </g>
+    <circle cx="338" cy="356" r="28" fill="#FF6F61"/>
+  </g>
+  <text x="548" y="212" class="l" font-size="34" letter-spacing="-1"><tspan fill="#FFFFFF">Fitt</tspan><tspan fill="#12C6DE">.</tspan><tspan fill="#FFFFFF">d</tspan></text>
+
+  <line x1="48" y1="286" x2="992" y2="286" stroke="#DFE6E9" stroke-width="1"/>
+
+  <!-- Core palette -->
+  <text x="48" y="322" class="m" font-size="12" fill="#717D83" letter-spacing="1">CORE PALETTE</text>
+
+  <!-- Cyan -->
+  <rect x="48" y="338" width="220" height="120" rx="16" fill="#08B6D0"/>
+  <text x="68" y="432" class="l" font-size="16" fill="#052A31">Cyan / Primary</text>
+  <text x="68" y="452" class="c" font-size="13" fill="#052A31">#08B6D0</text>
+
+  <!-- Ink -->
+  <rect x="284" y="338" width="220" height="120" rx="16" fill="#0B1F2A"/>
+  <text x="304" y="432" class="l" font-size="16" fill="#FFFFFF">Ink / Secondary</text>
+  <text x="304" y="452" class="c" font-size="13" fill="#8FE7F1">#0B1F2A</text>
+
+  <!-- Coral -->
+  <rect x="520" y="338" width="220" height="120" rx="16" fill="#FF6F61"/>
+  <text x="540" y="432" class="l" font-size="16" fill="#4A1610">Coral / Accent</text>
+  <text x="540" y="452" class="c" font-size="13" fill="#4A1610">#FF6F61</text>
+
+  <!-- Surface -->
+  <rect x="756" y="338" width="220" height="120" rx="16" fill="#FFFFFF" stroke="#DFE6E9"/>
+  <text x="776" y="432" class="l" font-size="16" fill="#0B1F2A">Surface</text>
+  <text x="776" y="452" class="c" font-size="13" fill="#515D63">#FFFFFF</text>
+
+  <!-- Cyan ramp -->
+  <text x="48" y="502" class="m" font-size="12" fill="#717D83" letter-spacing="1">CYAN RAMP</text>
+  <g>
+    <rect x="48"  y="514" width="112" height="46" rx="8" fill="#E6FAFD"/>
+    <rect x="166" y="514" width="112" height="46" rx="8" fill="#C3F2F9"/>
+    <rect x="284" y="514" width="112" height="46" rx="8" fill="#8FE7F1"/>
+    <rect x="402" y="514" width="112" height="46" rx="8" fill="#1FC2D6"/>
+    <rect x="520" y="514" width="112" height="46" rx="8" fill="#08B6D0"/>
+    <rect x="638" y="514" width="112" height="46" rx="8" fill="#0A8FA6"/>
+    <rect x="756" y="514" width="112" height="46" rx="8" fill="#0C7383"/>
+    <rect x="874" y="514" width="112" height="46" rx="8" fill="#124B56"/>
+  </g>
+  <g class="c" font-size="10" fill="#515D63">
+    <text x="52" y="576">50</text>
+    <text x="170" y="576">100</text>
+    <text x="288" y="576">200</text>
+    <text x="406" y="576">400</text>
+    <text x="524" y="576">500</text>
+    <text x="642" y="576">600</text>
+    <text x="760" y="576">700</text>
+    <text x="878" y="576">900</text>
+  </g>
+
+  <!-- Neutral ramp -->
+  <text x="48" y="612" class="m" font-size="12" fill="#717D83" letter-spacing="1">NEUTRAL RAMP (SLATE)</text>
+  <g>
+    <rect x="48"  y="624" width="112" height="46" rx="8" fill="#F7F9FA" stroke="#DFE6E9"/>
+    <rect x="166" y="624" width="112" height="46" rx="8" fill="#EEF2F4"/>
+    <rect x="284" y="624" width="112" height="46" rx="8" fill="#DFE6E9"/>
+    <rect x="402" y="624" width="112" height="46" rx="8" fill="#9DA9AE"/>
+    <rect x="520" y="624" width="112" height="46" rx="8" fill="#717D83"/>
+    <rect x="638" y="624" width="112" height="46" rx="8" fill="#515D63"/>
+    <rect x="756" y="624" width="112" height="46" rx="8" fill="#3A454B"/>
+    <rect x="874" y="624" width="112" height="46" rx="8" fill="#0F1A20"/>
+  </g>
+  <g class="c" font-size="10" fill="#515D63">
+    <text x="52" y="686">50</text>
+    <text x="170" y="686">100</text>
+    <text x="288" y="686">200</text>
+    <text x="406" y="686">400</text>
+    <text x="524" y="686">500</text>
+    <text x="642" y="686">600</text>
+    <text x="760" y="686">700</text>
+    <text x="878" y="686">900</text>
+  </g>
+
+  <text x="48" y="726" class="m" font-size="12" fill="#9DA9AE">Wordmark type: Manrope 700–800 · Body: Inter · Data/mono: system monospace</text>
+</svg>
