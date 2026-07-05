@@ -111,6 +111,74 @@ test.describe("job description input", () => {
   });
 });
 
+test.describe("job description live-preview", () => {
+  test("shows detected skills, seniority, and responsibilities after a pause", async ({
+    page,
+  }) => {
+    await page.goto("/analyze/job");
+    await page
+      .getByLabel("Paste the full job description")
+      .fill("We need a senior React and TypeScript engineer.");
+
+    await expect(page.getByText("React", { exact: true })).toBeVisible();
+    await expect(page.getByText("Required skills")).toBeVisible();
+    await expect(page.getByText("senior", { exact: true })).toBeVisible();
+    await expect(page.getByText("Core responsibilities")).toBeVisible();
+  });
+
+  test("does not show a result immediately on the first keystroke (debounced, not per-keystroke)", async ({
+    page,
+  }) => {
+    await page.goto("/analyze/job");
+    await page.getByLabel("Paste the full job description").pressSequentially("R");
+    await expect(page.getByText("Required skills")).not.toBeVisible();
+  });
+
+  test("updates the preview when the job description is edited (no stale result)", async ({
+    page,
+  }) => {
+    await page.goto("/analyze/job");
+    const textarea = page.getByLabel("Paste the full job description");
+
+    await textarea.fill("We need a senior React and TypeScript engineer.");
+    await expect(page.getByText("Required skills")).toBeVisible();
+    await expect(page.getByText("Notable signals")).not.toBeVisible();
+
+    await textarea.fill(
+      "We need a senior engineer experienced with Kubernetes.",
+    );
+    await expect(page.getByText("Notable signals")).toBeVisible();
+    await expect(page.getByText("Mentions Kubernetes")).toBeVisible();
+  });
+
+  test("degrades gracefully with a clear message when the model fails", async ({
+    page,
+  }) => {
+    await page.goto("/analyze/job");
+    await page
+      .getByLabel("Paste the full job description")
+      .fill("TRIGGER_FAKE_ERROR — force the fake provider to fail.");
+
+    await expect(
+      page.getByText(/couldn't analyze this job description/i),
+    ).toBeVisible();
+    await expect(page.getByText("Required skills")).not.toBeVisible();
+  });
+
+  test("proceeding to the next step is not blocked by the live preview", async ({
+    page,
+  }) => {
+    await page.goto("/analyze/job");
+    await page
+      .getByLabel("Paste the full job description")
+      .fill("We need a senior React and TypeScript engineer.");
+    // Don't wait for the preview — Continue must already be enabled.
+    await expect(
+      page.getByRole("button", { name: /continue/i }),
+    ).toBeEnabled();
+  });
+});
+
 test.describe("try a sample", () => {
   test("loads sample resume and job description with zero input", async ({
     page,

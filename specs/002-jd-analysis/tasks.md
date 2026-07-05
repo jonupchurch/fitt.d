@@ -23,8 +23,8 @@ description: "Task list for feature 002 - Job Description Analysis"
 
 **Purpose**: Pull in this feature's new dependency and environment config — nothing else can start until they exist.
 
-- [ ] T001 Add `ai` (Vercel AI SDK) as a dependency in `package.json`, run `npm install`, and commit the updated `package-lock.json`
-- [ ] T002 [P] Update `.env.example`: change `FITTD_MODEL` to a Gateway-qualified placeholder (e.g. `anthropic/claude-<version>` — fetch the current model ID per `research.md` rather than guessing) and add `AI_GATEWAY_API_KEY`
+- [X] T001 Add `ai` (Vercel AI SDK) as a dependency in `package.json`, run `npm install`, and commit the updated `package-lock.json`
+- [X] T002 [P] Update `.env.example`: change `FITTD_MODEL` to a Gateway-qualified placeholder (e.g. `anthropic/claude-<version>` — fetch the current model ID per `research.md` rather than guessing) and add `AI_GATEWAY_API_KEY`
 
 **Checkpoint**: New dependency installed, env documented; no application code changed yet.
 
@@ -36,13 +36,13 @@ description: "Task list for feature 002 - Job Description Analysis"
 
 **⚠️ CRITICAL**: No user story can be implemented until this phase is complete.
 
-- [ ] T003 Define the `JDAnalysis` Zod schema in `src/lib/llm/schemas.ts` (shape per `docs/data-model.md`)
-- [ ] T004 [P] Author `prompts/README.md` (prompt versioning convention, Constitution Principle II) and `prompts/jd-analysis.v1.md` (the analysis prompt, informed by — not copied from — the reference bundle's draft)
-- [ ] T005 Implement the AI SDK/Gateway wrapper — schema-validated structured generation plus the one-retry repair loop from `research.md` — in `src/lib/llm/provider.ts` (depends on: T003)
-- [ ] T006 [P] Implement the deterministic fake provider used by tests in `src/lib/llm/fake-provider.ts` (Constitution Principle V pattern — no network, no cost)
-- [ ] T007 [P] Implement the in-memory per-IP fixed-window rate limiter in `src/lib/llm/rate-limit.ts` (6 requests/minute, `docs/non-functional.md`)
-- [ ] T008 Implement `analyzeJobDescription(text)` in `src/lib/llm/analyze-jd.ts`, loading the prompt (T004) and calling the provider wrapper (T005) (depends on: T004, T005)
-- [ ] T009 Implement the `analyzeJobDescription` Server Action in `src/app/analyze/job/actions.ts` per `contracts/actions.md`, checking the rate limiter (T007) before calling T008 (depends on: T007, T008)
+- [X] T003 Define the `JDAnalysis` Zod schema in `src/lib/llm/schemas.ts` (shape per `docs/data-model.md`)
+- [X] T004 [P] Author `prompts/README.md` (prompt versioning convention, Constitution Principle II) and `prompts/jd-analysis.v1.md` (the analysis prompt, informed by — not copied from — the reference bundle's draft)
+- [X] T005 Implement the AI SDK/Gateway wrapper — schema-validated structured generation plus the one-retry repair loop from `research.md` — in `src/lib/llm/provider.ts` (depends on: T003)
+- [X] T006 [P] Implement the deterministic fake provider used by tests in `src/lib/llm/fake-provider.ts` (Constitution Principle V pattern — no network, no cost)
+- [X] T007 [P] Implement the in-memory per-IP fixed-window rate limiter in `src/lib/llm/rate-limit.ts` (6 requests/minute, `docs/non-functional.md`)
+- [X] T008 Implement `analyzeJobDescription(text)` in `src/lib/llm/analyze-jd.ts`, loading the prompt (T004) and calling the provider wrapper (T005) (depends on: T004, T005)
+- [X] T009 Implement the `analyzeJobDescription` Server Action in `src/app/analyze/job/actions.ts` per `contracts/actions.md`, checking the rate limiter (T007) before calling T008 (depends on: T007, T008)
 
 **Checkpoint**: The analysis pipeline works end-to-end (text in, validated `JDAnalysis` or a typed error out) — user story work is now UI/behavior on top of it.
 
@@ -56,13 +56,13 @@ description: "Task list for feature 002 - Job Description Analysis"
 
 ### Tests for User Story 1
 
-- [ ] T010 [P] [US1] Vitest tests for `analyze-jd.ts`/`provider.ts` covering successful schema validation and the repair-retry path, against the fake provider, in `tests/llm/analyze-jd.test.ts`
-- [ ] T011 [P] [US1] Vitest tests for `rate-limit.ts` window/limit edge cases in `tests/llm/rate-limit.test.ts`
+- [X] T010 [P] [US1] Vitest tests for `analyze-jd.ts`/`provider.ts` covering successful schema validation and the repair-retry path, against the fake provider, in `tests/llm/analyze-jd.test.ts`
+- [X] T011 [P] [US1] Vitest tests for `rate-limit.ts` window/limit edge cases in `tests/llm/rate-limit.test.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T012 [US1] Add the live-preview panel to `src/app/analyze/job/page.tsx`: debounce (~750ms) after the candidate stops editing, then call `analyzeJobDescription` and render required-skill / nice-to-have-skill / ATS-keyword chips with a skeleton loading state and an accessible live-region announcement (depends on: T009)
-- [ ] T013 [US1] Add the error state to the live-preview panel for `invalid_model_output` / `provider_unavailable` / `rate_limited` — a clear, non-blocking, brand-tokened message (depends on: T012)
+- [X] T012 [US1] Add the live-preview panel to `src/app/analyze/job/page.tsx`: debounce (~750ms) after the candidate stops editing, then call `analyzeJobDescription` and render required-skill / nice-to-have-skill / ATS-keyword chips with a skeleton loading state and an accessible live-region announcement (depends on: T009)
+- [X] T013 [US1] Add the error state to the live-preview panel for `invalid_model_output` / `provider_unavailable` / `rate_limited` — a clear, non-blocking, brand-tokened message (depends on: T012)
 
 **Checkpoint**: User Story 1 is fully functional and independently testable.
 
@@ -76,8 +76,8 @@ description: "Task list for feature 002 - Job Description Analysis"
 
 ### Implementation for User Story 2
 
-- [ ] T014 [US2] Extend the live-preview panel in `src/app/analyze/job/page.tsx` to also render inferred seniority and the responsibilities list from the same `JDAnalysis` result (depends on: T012)
-- [ ] T015 [US2] Vitest test asserting an unusual requirement in a fixture job description is captured as a notable signal rather than dropped, against the fake provider, in `tests/llm/analyze-jd.test.ts` (depends on: T008)
+- [X] T014 [US2] Extend the live-preview panel in `src/app/analyze/job/page.tsx` to also render inferred seniority and the responsibilities list from the same `JDAnalysis` result (depends on: T012)
+- [X] T015 [US2] Vitest test asserting an unusual requirement in a fixture job description is captured as a notable signal rather than dropped, against the fake provider, in `tests/llm/analyze-jd.test.ts` (depends on: T008)
 
 **Checkpoint**: User Stories 1 and 2 both independently functional.
 
@@ -91,9 +91,9 @@ description: "Task list for feature 002 - Job Description Analysis"
 
 ### Implementation for User Story 3
 
-- [ ] T016 [US3] Implement a "latest-call-wins" wrapper (an earlier in-flight call resolving after a newer one MUST NOT overwrite the newer result) in `src/lib/llm/latest-only.ts`
-- [ ] T017 [P] [US3] Vitest test for the latest-call-wins wrapper in `tests/llm/latest-only.test.ts` (depends on: T016)
-- [ ] T018 [US3] Wire debounced re-triggering plus the latest-call-wins wrapper into `src/app/analyze/job/page.tsx` so editing the job description reruns analysis and supersedes stale or in-flight results (depends on: T012, T016)
+- [X] T016 [US3] Implement a "latest-call-wins" wrapper (an earlier in-flight call resolving after a newer one MUST NOT overwrite the newer result) in `src/lib/llm/latest-only.ts`
+- [X] T017 [P] [US3] Vitest test for the latest-call-wins wrapper in `tests/llm/latest-only.test.ts` (depends on: T016)
+- [X] T018 [US3] Wire debounced re-triggering plus the latest-call-wins wrapper into `src/app/analyze/job/page.tsx` so editing the job description reruns analysis and supersedes stale or in-flight results (depends on: T012, T016)
 
 **Checkpoint**: All three user stories independently functional — feature complete.
 
@@ -103,13 +103,13 @@ description: "Task list for feature 002 - Job Description Analysis"
 
 **Purpose**: Wrap-up items spanning all three stories.
 
-- [ ] T019 [P] Extend the accessibility check (`e2e/accessibility.spec.ts` or feature 001's `/analyze/job` coverage) to also assert no violations across the live-preview panel's skeleton, populated, and error states
-- [ ] T020 Extend `e2e/analyze-input.spec.ts` (feature 001) with live-preview assertions per `quickstart.md`, run against the fake provider
-- [ ] T021 [P] Author `docs/adr/0002-model-provider-abstraction.md`
-- [ ] T022 [P] Author `docs/adr/0003-llm-output-validation-and-retry.md`
-- [ ] T023 [P] Author `docs/adr/0004-response-delivery-strategy.md`
-- [ ] T024 Run `quickstart.md` end-to-end and confirm every scenario passes
-- [ ] T025 Add a `CHANGELOG.md` entry summarizing feature 002 (Constitution Principle VI), included in the push that closes this feature
+- [X] T019 [P] Extend the accessibility check (`e2e/accessibility.spec.ts` or feature 001's `/analyze/job` coverage) to also assert no violations across the live-preview panel's skeleton, populated, and error states
+- [X] T020 Extend `e2e/analyze-input.spec.ts` (feature 001) with live-preview assertions per `quickstart.md`, run against the fake provider
+- [X] T021 [P] Author `docs/adr/0002-model-provider-abstraction.md`
+- [X] T022 [P] Author `docs/adr/0003-llm-output-validation-and-retry.md`
+- [X] T023 [P] Author `docs/adr/0004-response-delivery-strategy.md`
+- [X] T024 Run `quickstart.md` end-to-end and confirm every scenario passes
+- [X] T025 Add a `CHANGELOG.md` entry summarizing feature 002 (Constitution Principle VI), included in the push that closes this feature
 
 ---
 

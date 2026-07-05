@@ -342,3 +342,43 @@ checks green (`typecheck`, `lint`, `test`, `test:e2e`).
   a read-only state with no way back once submitted. Deferred until the
   core MVP (000–005) is built, since feature 005's planned "Try another
   job" reset may already cover most of the real need.
+
+## 2026-07-05 — Feature 002: Job Description Analysis (implemented)
+
+All 25 tasks complete, all four quality-bar checks green (`typecheck`,
+`lint`, `test` — 32 passing, `test:e2e` — 18 passing), plus `eval` and
+`build`. This is the first feature calling an LLM.
+
+- `/analyze/job` gained a live keyword-detection preview: paste a job
+  description, pause (~750ms debounce), and required skills, nice-to-
+  have skills, ATS keywords, inferred seniority, responsibilities, and
+  notable signals appear — via the Vercel AI SDK routed through the AI
+  Gateway (`FITTD_MODEL=anthropic/claude-sonnet-5`), Zod-validated with
+  one bounded repair retry, behind a shared per-IP rate limiter.
+- `docs/adr/0002`–`0004` written and indexed: provider abstraction,
+  output validation/retry, and response delivery strategy (skeleton-
+  until-validated for structured data; literal streaming deferred to
+  feature 004's prose output).
+- **No API key needed for this work**: confirmed Vercel AI Gateway
+  defaults to OIDC auth (zero-config once enabled in the project's
+  Vercel dashboard), not a manual key — `.env.example` corrected
+  accordingly (was previously documenting a raw `ANTHROPIC_API_KEY`
+  from feature 000, before the Gateway architecture was decided).
+- Confirmed the AI SDK's current API directly against installed docs
+  (`node_modules/ai/docs/`) rather than trusting memory: `generateText`/
+  `streamText` with `output: Output.object({ schema })`, not the
+  deprecated `generateObject`/`streamObject`.
+- All tests (Vitest and Playwright) run against a deterministic fake
+  provider — real analysis code, zero network calls or cost. The
+  Playwright dev server sets `FITTD_FAKE_PROVIDER=true`; the fake path
+  derives one field from the input text so freshness (US3) and
+  graceful-degradation (a magic error-trigger phrase) are both
+  meaningfully e2e-testable, not just unit-tested.
+- One real lint fix during implementation: the live-preview's debounce
+  effect tripped `react-hooks/set-state-in-effect` on its "clear when
+  empty" branch; fixed by moving *all* state updates (including that
+  one) inside the `setTimeout` callback rather than the synchronous
+  effect body.
+- `next.config.ts` gained a second `outputFileTracingIncludes` entry
+  (`prompts/**` for the `/analyze/job` route) — the same dynamic-
+  `fs.readFile` tracing concern as feature 001's sample fixtures.

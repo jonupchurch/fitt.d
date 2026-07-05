@@ -11,5 +11,8 @@ Format: lightweight [MADR](https://adr.github.io/madr/). Status is one of
 | # | Decision | Status |
 |---|---|---|
 | [0001](0001-resume-jd-input-validation.md) | Resume/JD input parsing and validation strategy (feature 001) | Accepted |
+| [0002](0002-model-provider-abstraction.md) | Abstract the model provider behind the Vercel AI Gateway (feature 002) | Accepted |
+| [0003](0003-llm-output-validation-and-retry.md) | Validate LLM output with Zod and a bounded repair retry (feature 002) | Accepted |
+| [0004](0004-response-delivery-strategy.md) | Skeleton-until-validated for structured output; streaming reserved for prose (feature 002) | Accepted |
 
 New decision? Copy `0000-template.md`.

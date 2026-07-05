@@ -1,9 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { JobIcon } from "@/components/icons";
+import { createLatestOnly } from "@/lib/llm/latest-only";
+import type { JDAnalysis } from "@/lib/llm/schemas";
 import { useWizard } from "../wizard-context";
-import { submitJobDescription } from "./actions";
+import { analyzeJobDescription, submitJobDescription } from "./actions";
+
+const DEBOUNCE_MS = 750;
+
+function ChipGroup({
+  label,
+  items,
+  tone,
+}: {
+  label: string;
+  items: string[];
+  tone: "required" | "nice" | "keyword";
+}) {
+  if (items.length === 0) return null;
+
+  const toneClass =
+    tone === "required"
+      ? "bg-cyan-50 text-brand-strong"
+      : tone === "nice"
+        ? "bg-n-100 text-n-700"
+        : "border border-n-300 text-n-700";
+
+  return (
+    <div>
+      <p className="mb-2 text-xs font-semibold tracking-wide text-n-600 uppercase">
+        {label}
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {items.map((item) => (
+          <span
+            key={item}
+            className={`rounded-full px-3 py-1 text-xs font-medium ${toneClass}`}
+          >
+            {item}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function JobDescriptionPage() {
   const { setJobDescription, jobDescription } = useWizard();
@@ -14,6 +55,57 @@ export default function JobDescriptionPage() {
   const [error, setError] = useState<string | null>(null);
 
   const canSubmit = text.trim().length > 0 && !isSubmitting;
+
+  const [preview, setPreview] = useState<JDAnalysis | null>(null);
+  const [previewStatus, setPreviewStatus] = useState<
+    "idle" | "loading" | "error"
+  >("idle");
+  const [previewError, setPreviewError] = useState<string | null>(null);
+
+  const runLatestOnly = useMemo(
+    () => createLatestOnly<Awaited<ReturnType<typeof analyzeJobDescription>>>(),
+    [],
+  );
+
+  // Live keyword-detection preview: debounced (not on every keystroke,
+  // per FR-002), and guarded against a stale in-flight response
+  // overwriting a fresher one (FR-004, US3) via createLatestOnly. All
+  // state updates happen inside the timeout callback (even the
+  // "cleared" case) rather than synchronously in the effect body, to
+  // avoid a same-tick render cascade.
+  useEffect(() => {
+    const isEmpty = text.trim().length === 0;
+
+    const timer = setTimeout(
+      () => {
+        if (isEmpty) {
+          setPreview(null);
+          setPreviewStatus("idle");
+          setPreviewError(null);
+          return;
+        }
+
+        setPreviewStatus("loading");
+        void runLatestOnly(() => analyzeJobDescription(text)).then(
+          (outcome) => {
+            if (outcome.stale) return;
+            const result = outcome.value;
+            if (!result.ok) {
+              setPreviewStatus("error");
+              setPreviewError(result.error.message);
+              return;
+            }
+            setPreview(result.data);
+            setPreviewStatus("idle");
+            setPreviewError(null);
+          },
+        );
+      },
+      isEmpty ? 0 : DEBOUNCE_MS,
+    );
+
+    return () => clearTimeout(timer);
+  }, [text, runLatestOnly]);
 
   async function handleSubmit() {
     setIsSubmitting(true);
@@ -107,6 +199,93 @@ export default function JobDescriptionPage() {
           className="focus:ring-brand/30 w-full rounded-xl border border-n-300 bg-white p-4 text-sm text-ink focus:border-brand focus:ring-2 focus:outline-none"
         />
       </label>
+
+      {text.trim().length > 0 ? (
+        <div
+          aria-live="polite"
+          className="rounded-2xl border border-n-200 bg-white p-5"
+        >
+          <p className="mb-3 text-xs font-semibold tracking-wide text-n-600 uppercase">
+            Detected requirements & keywords
+          </p>
+
+          {previewStatus === "loading" && !preview ? (
+            <div className="flex flex-col gap-2">
+              <span className="sr-only">Analyzing job description…</span>
+              <div
+                aria-hidden="true"
+                className="h-4 w-2/3 animate-pulse rounded bg-n-200"
+              />
+              <div
+                aria-hidden="true"
+                className="h-4 w-1/2 animate-pulse rounded bg-n-200"
+              />
+              <div
+                aria-hidden="true"
+                className="h-4 w-3/4 animate-pulse rounded bg-n-200"
+              />
+            </div>
+          ) : null}
+
+          {previewStatus === "error" ? (
+            <p role="alert" className="text-sm font-medium text-danger">
+              {previewError}
+            </p>
+          ) : null}
+
+          {preview ? (
+            <div className="flex flex-col gap-4">
+              <ChipGroup
+                label="Required skills"
+                items={preview.requiredSkills}
+                tone="required"
+              />
+              <ChipGroup
+                label="Nice to have"
+                items={preview.niceToHaveSkills}
+                tone="nice"
+              />
+              <ChipGroup
+                label="ATS keywords"
+                items={preview.atsKeywords}
+                tone="keyword"
+              />
+              <div>
+                <p className="mb-1 text-xs font-semibold tracking-wide text-n-600 uppercase">
+                  Seniority
+                </p>
+                <p className="text-sm text-ink capitalize">
+                  {preview.inferredSeniority}
+                </p>
+              </div>
+              {preview.responsibilities.length > 0 ? (
+                <div>
+                  <p className="mb-1 text-xs font-semibold tracking-wide text-n-600 uppercase">
+                    Core responsibilities
+                  </p>
+                  <ul className="list-disc pl-5 text-sm text-ink">
+                    {preview.responsibilities.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+              {preview.notableSignals.length > 0 ? (
+                <div>
+                  <p className="mb-1 text-xs font-semibold tracking-wide text-n-600 uppercase">
+                    Notable signals
+                  </p>
+                  <ul className="list-disc pl-5 text-sm text-ink">
+                    {preview.notableSignals.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
 
       {error ? (
         <p role="alert" className="text-sm font-medium text-danger">

@@ -19,5 +19,9 @@ export default defineConfig({
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,
+    // Analysis features (002+) route through this flag to a
+    // deterministic fixture instead of a live model call — e2e tests
+    // stay network-free per Constitution Principle V.
+    env: { FITTD_FAKE_PROVIDER: "true" },
   },
 });

@@ -8,12 +8,15 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
   },
-  // loadSampleFixture() (src/lib/input/sample-fixture.ts) reads these at
-  // request time via a dynamic path — file tracing can't always infer that
-  // automatically, so the sample fixture directory is included explicitly
-  // for the route ("/") that invokes it.
+  // Server Actions read these at request time via a dynamic fs path —
+  // file tracing can't always infer that automatically, so the
+  // directories are included explicitly for the routes that invoke them.
+  // loadSampleFixture() (src/lib/input/sample-fixture.ts):
   outputFileTracingIncludes: {
     "/": ["./evals/fixtures/sample-1/**"],
+    // analyzeJobDescription() (src/lib/llm/analyze-jd.ts) reads its
+    // versioned prompt file:
+    "/analyze/job": ["./prompts/**"],
   },
 };
 
