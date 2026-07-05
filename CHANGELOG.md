@@ -441,3 +441,26 @@ All 20 tasks complete, full quality bar green (`typecheck`, `lint`,
   this over the default 6/minute limit under 16-way parallelism.
   Playwright's dev server now sets `FITTD_RATE_LIMIT_PER_MINUTE=1000`
   (the real limiting behavior stays covered by `rate-limit.test.ts`).
+
+## 2026-07-05 — Fix: surface provider errors, improve the loading state
+
+Two follow-ups from testing feature 003 live for real (with a real AI
+Gateway credit card on file, after diagnosing that the live "analysis
+service unavailable" message was a Gateway billing gate, not a code
+bug — `generateStructured()` was catching and discarding the actual
+error instead of just returning a typed result).
+
+- `src/lib/llm/provider.ts` now `console.error`s the real cause behind
+  any `provider_error` result (auth, billing, model availability,
+  network) — previously invisible in Vercel's runtime logs, which
+  turned a one-line diagnosis into guesswork. This is what surfaced
+  `GatewayInternalServerError: AI Gateway requires a valid credit card
+  on file` in under a minute.
+- `/analyze/report`'s loading state got a real upgrade: a real LLM
+  resume analysis takes up to ~60 seconds, and a static pulsing
+  skeleton read as stuck rather than working. It now cycles through
+  short status messages ("Parsing sections…", "Checking ATS
+  compatibility…", etc.) every ~2.2s alongside a sliding indeterminate
+  progress bar (new `animate-indeterminate` keyframe in
+  `globals.css`) — a single static screen-reader announcement covers
+  the wait without re-announcing on every message change.

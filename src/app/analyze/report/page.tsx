@@ -21,6 +21,34 @@ const STATUS_LABELS: Record<string, string> = {
   "not-found": "Not found",
 };
 
+const LOADING_MESSAGES = [
+  "Reading your resume…",
+  "Parsing sections…",
+  "Checking ATS compatibility…",
+  "Weighing strengths and weaknesses…",
+  "Drafting rewrite suggestions…",
+  "Tallying your score…",
+  "Polishing the details…",
+];
+const LOADING_MESSAGE_INTERVAL_MS = 2200;
+
+/** Cycles through LOADING_MESSAGES while `active`, so a long-running
+ * analysis call (up to ~60s) reads as actively working rather than
+ * stuck on a static skeleton. */
+function useLoadingMessage(active: boolean): string {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    if (!active) return;
+    const timer = setInterval(() => {
+      setIndex((current) => (current + 1) % LOADING_MESSAGES.length);
+    }, LOADING_MESSAGE_INTERVAL_MS);
+    return () => clearInterval(timer);
+  }, [active]);
+
+  return LOADING_MESSAGES[index];
+}
+
 function scoreLabel(score: number): string {
   if (score >= 90) return "Excellent";
   if (score >= 75) return "Strong";
@@ -241,6 +269,7 @@ export default function ReportPage() {
   }, [resume]);
 
   const isLoading = resume !== null && analysis === null && error === null;
+  const loadingMessage = useLoadingMessage(isLoading);
 
   if (!resume) {
     return (
@@ -275,23 +304,30 @@ export default function ReportPage() {
       </div>
 
       {isLoading ? (
-        <div
-          aria-live="polite"
-          className="flex flex-col items-center gap-4 rounded-2xl border border-n-200 bg-white px-6 py-12"
-        >
-          <span className="sr-only">Analyzing your resume…</span>
+        <div className="flex flex-col items-center gap-4 rounded-2xl border border-n-200 bg-white px-6 py-12">
+          {/* One calm, static announcement for screen readers — the
+              cycling text below is decorative flavor for sighted users,
+              not re-announced on every change (would be excessive over
+              a ~60s wait). */}
+          <span className="sr-only" aria-live="polite">
+            Analyzing your resume — this can take up to a minute.
+          </span>
           <div
             aria-hidden="true"
             className="h-36 w-36 animate-pulse rounded-full bg-n-200"
           />
+          <p
+            aria-hidden="true"
+            className="text-sm font-medium text-brand-strong"
+          >
+            {loadingMessage}
+          </p>
           <div
             aria-hidden="true"
-            className="h-4 w-2/3 animate-pulse rounded bg-n-200"
-          />
-          <div
-            aria-hidden="true"
-            className="h-4 w-1/2 animate-pulse rounded bg-n-200"
-          />
+            className="h-1.5 w-48 overflow-hidden rounded-full bg-n-200"
+          >
+            <div className="animate-indeterminate h-full w-1/3 rounded-full bg-brand-strong" />
+          </div>
         </div>
       ) : null}
 
