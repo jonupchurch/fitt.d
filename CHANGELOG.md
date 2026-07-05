@@ -160,3 +160,19 @@ each completed Spec Kit phase rather than waiting to be asked.
   JD-tailored `rewrittenBullets` (feature 004).
 - Reuses feature 002's provider/validation/retry/rate-limit
   infrastructure rather than re-deciding it.
+
+## 2026-07-05 — Feature 003: Resume Analysis (plan)
+
+- `specs/003-resume-analysis/plan.md`, `research.md`,
+  `contracts/actions.md`, `quickstart.md` — this feature's only new
+  architectural call is structural: one LLM call does both resume
+  parsing and quality judgment, rather than a separate deterministic
+  parser stage (rejected as unjustified complexity for this project's
+  scope). Everything else — provider, Zod validation/retry, response
+  delivery — is inherited from feature 002 without modification.
+- The rate limiter is **shared** across JD analysis and resume
+  analysis (one 6/minute budget per IP, not two), matching
+  `docs/non-functional.md`'s single stated limit.
+- `/analyze/report` becomes the wizard's real second step (Upload →
+  Analysis → Job desc. → Match), matching the wireframe's order.
+- One ADR owed during implementation: `docs/adr/0005-resume-parsing-approach.md`.
