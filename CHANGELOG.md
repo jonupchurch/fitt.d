@@ -60,3 +60,19 @@ before `/speckit-specify` resumes on feature `001`.
   `jonupchurch/fitt.d.prod` GitHub repo before the project's Git
   connection was corrected to point at `jonupchurch/fitt.d`; pushes to
   `main` now auto-deploy to production directly from this repo.
+
+## 2026-07-05 — Feature 001: Resume & Job Description Input (spec)
+
+- `specs/001-resume-jd-input/spec.md` — first real product feature spec:
+  candidate resume input (upload PDF/DOCX/TXT or paste) and job
+  description input (paste, with optional title/company), plus the
+  one-click "Try a sample" zero-input demo path required by Constitution
+  Principle IV. Passed the requirements quality checklist clean with no
+  `[NEEDS CLARIFICATION]` markers needed — defaults came from
+  `docs/non-functional.md`, `docs/data-model.md`, and the approved
+  wireframes.
+- Scope boundary called out explicitly: the wireframe renders the live
+  keyword-detection preview on the same screen as the JD paste box, but
+  per `docs/data-model.md` that preview is `JDAnalysis` output (feature
+  002), not this feature's — 001 stays scoped to capturing, validating,
+  and normalizing raw input only.
