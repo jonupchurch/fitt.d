@@ -9,22 +9,21 @@ the spot — this is the list to work from once the core MVP (features
 Each entry: what it is, which feature it came up during, and why it
 was deferred rather than folded in.
 
-## Edit/replace resume and job description mid-flow
+## ~~Edit/replace resume and job description mid-flow~~ — Resolved 2026-07-05
 
 Surfaced during: feature 001 (Resume & JD Input), post-implementation.
+Resolved during feature 002's implementation once it became a real
+blocker (the sample-JD "stuck" state) rather than a hypothetical.
 
-Right now `/analyze/upload` always shows the empty form regardless of
-whether a resume already exists in session — resubmitting silently
-overwrites it, with no confirmation or indication. `/analyze/job` does
-the opposite: once a job description is submitted, the page locks into
-a read-only "ready" state with no way to go back and edit or replace
-it.
-
-**Why deferred**: feature 001's spec scoped a forward-only entry flow;
-editing/replacing wasn't a stated requirement. Feature 005 already
-plans a scoped reset ("Try another job" — clears job-description-side
-state while preserving the resume, its analysis, and any applied
-tailored edits), which may cover most of the real need. Revisit once
-the core MVP is built: decide whether a lighter, symmetric "replace"
-affordance on both input screens is still wanted independently of
-feature 005's reset, or whether that reset is sufficient on its own.
+What shipped: both `/analyze/upload` and `/analyze/job` now show a
+"ready" summary with an explicit "Replace resume" / "Change job
+description" button once a value is saved, reopening the form
+(pre-filled with the current value for the JD; the resume form starts
+blank since raw files aren't retained) with a "Cancel" option to back
+out without resubmitting. The wizard progress bar's steps were also
+made into real clickable links (they were rendered but never wired to
+navigate — a leftover gap from feature 001), so moving between Upload
+and Job desc. no longer requires re-submitting a step to advance past
+it. Feature 005's "Try another job" reset is still a separate,
+additional mechanic (resets JD-side analysis state specifically) and
+remains planned as before.

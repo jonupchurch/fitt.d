@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useWizard } from "./wizard-context";
 
@@ -26,8 +27,8 @@ export function WizardProgress() {
     <ol aria-label="Progress" className="flex flex-wrap items-center gap-2">
       {steps.map((step, index) => {
         const isCurrent = step.href !== null && pathname === step.href;
-        return (
-          <li key={step.label} className="flex items-center gap-2">
+        const badgeAndLabel = (
+          <>
             <span
               aria-current={isCurrent ? "step" : undefined}
               className={
@@ -46,6 +47,21 @@ export function WizardProgress() {
             >
               {step.label}
             </span>
+          </>
+        );
+
+        return (
+          <li key={step.label} className="flex items-center gap-2">
+            {step.href ? (
+              <Link
+                href={step.href}
+                className="focus-visible:ring-brand/40 flex items-center gap-2 rounded-full focus-visible:ring-2 focus-visible:outline-none"
+              >
+                {badgeAndLabel}
+              </Link>
+            ) : (
+              <span className="flex items-center gap-2">{badgeAndLabel}</span>
+            )}
             {index < steps.length - 1 ? (
               <span aria-hidden="true" className="mx-1 h-px w-6 bg-n-200" />
             ) : null}

@@ -53,6 +53,7 @@ export default function JobDescriptionPage() {
   const [company, setCompany] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   const canSubmit = text.trim().length > 0 && !isSubmitting;
 
@@ -125,9 +126,20 @@ export default function JobDescriptionPage() {
     }
 
     setJobDescription(result.data);
+    setIsEditing(false);
   }
 
-  if (jobDescription) {
+  function startEditing() {
+    if (jobDescription) {
+      setText(jobDescription.rawText);
+      setTitle(jobDescription.title ?? "");
+      setCompany(jobDescription.company ?? "");
+    }
+    setError(null);
+    setIsEditing(true);
+  }
+
+  if (jobDescription && !isEditing) {
     return (
       <div className="flex flex-col items-center gap-4 rounded-2xl border border-n-200 bg-white px-6 py-12 text-center">
         <span className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-strong text-xl text-white">
@@ -143,6 +155,13 @@ export default function JobDescriptionPage() {
           features — for now, both your resume and job description are
           captured and ready.
         </p>
+        <button
+          type="button"
+          onClick={startEditing}
+          className="rounded-full border border-brand px-5 py-2 text-sm font-semibold text-brand-strong transition-colors hover:bg-cyan-50"
+        >
+          Change job description
+        </button>
       </div>
     );
   }
@@ -153,7 +172,7 @@ export default function JobDescriptionPage() {
         <JobIcon className="h-8 w-8 flex-none text-brand" aria-hidden="true" />
         <div>
           <h1 className="font-display text-2xl font-extrabold text-ink">
-            Paste the job description
+            {jobDescription ? "Update the job description" : "Paste the job description"}
           </h1>
           <p className="text-sm text-n-600">
             Title and company are optional — just for your report header.
@@ -297,14 +316,25 @@ export default function JobDescriptionPage() {
         <p className="text-xs text-n-600">
           🔒 Analyzed in-session · never stored
         </p>
-        <button
-          type="button"
-          onClick={handleSubmit}
-          disabled={!canSubmit}
-          className="rounded-full bg-brand-strong px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:bg-n-300"
-        >
-          {isSubmitting ? "Saving…" : "Continue →"}
-        </button>
+        <div className="flex items-center gap-3">
+          {jobDescription && isEditing ? (
+            <button
+              type="button"
+              onClick={() => setIsEditing(false)}
+              className="text-sm font-semibold text-n-600 hover:text-ink"
+            >
+              Cancel
+            </button>
+          ) : null}
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={!canSubmit}
+            className="rounded-full bg-brand-strong px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:bg-n-300"
+          >
+            {isSubmitting ? "Saving…" : "Continue →"}
+          </button>
+        </div>
       </div>
     </div>
   );

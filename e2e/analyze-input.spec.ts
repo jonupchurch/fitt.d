@@ -179,6 +179,96 @@ test.describe("job description live-preview", () => {
   });
 });
 
+test.describe("editing and replacing after the fact", () => {
+  test("can change the job description after it's already been saved", async ({
+    page,
+  }) => {
+    await page.goto("/analyze/job");
+    await page
+      .getByLabel("Paste the full job description")
+      .fill("First job description text.");
+    await page.getByRole("button", { name: /continue/i }).click();
+    await expect(
+      page.getByRole("heading", { name: "Job description ready" }),
+    ).toBeVisible();
+
+    await page
+      .getByRole("button", { name: /change job description/i })
+      .click();
+    const textarea = page.getByLabel("Paste the full job description");
+    await expect(textarea).toHaveValue("First job description text.");
+
+    await textarea.fill("Second, completely different job description.");
+    await page.getByRole("button", { name: /continue/i }).click();
+    await expect(
+      page.getByRole("heading", { name: "Job description ready" }),
+    ).toBeVisible();
+
+    // Re-open editing to confirm the update actually took hold (not
+    // still showing the first, stale text).
+    await page
+      .getByRole("button", { name: /change job description/i })
+      .click();
+    await expect(textarea).toHaveValue(
+      "Second, completely different job description.",
+    );
+  });
+
+  test("can cancel out of editing the job description without losing the saved one", async ({
+    page,
+  }) => {
+    await page.goto("/analyze/job");
+    await page
+      .getByLabel("Paste the full job description")
+      .fill("A saved job description.");
+    await page.getByRole("button", { name: /continue/i }).click();
+    await page
+      .getByRole("button", { name: /change job description/i })
+      .click();
+    await page.getByRole("button", { name: /cancel/i }).click();
+
+    await expect(
+      page.getByRole("heading", { name: "Job description ready" }),
+    ).toBeVisible();
+  });
+
+  test("can replace the resume after it's already been saved", async ({
+    page,
+  }) => {
+    await page.goto("/analyze/upload");
+    await page
+      .getByLabel("Paste resume text")
+      .fill("Jane Doe\nOriginal resume text.");
+    await page.getByRole("button", { name: /continue/i }).click();
+    await expect(page).toHaveURL("/analyze/job");
+
+    await page.goto("/analyze/upload");
+    await expect(
+      page.getByRole("heading", { name: "Resume ready" }),
+    ).toBeVisible();
+
+    await page.getByRole("button", { name: /replace resume/i }).click();
+    await page
+      .getByLabel("Paste resume text")
+      .fill("Jane Doe\nA completely different resume.");
+    await page.getByRole("button", { name: /continue/i }).click();
+    await expect(page).toHaveURL("/analyze/job");
+  });
+});
+
+test.describe("wizard navigation", () => {
+  test("progress bar steps are clickable links between Upload and Job desc.", async ({
+    page,
+  }) => {
+    await page.goto("/analyze/job");
+    await page.getByRole("link", { name: /upload/i }).click();
+    await expect(page).toHaveURL("/analyze/upload");
+
+    await page.getByRole("link", { name: /job desc\./i }).click();
+    await expect(page).toHaveURL("/analyze/job");
+  });
+});
+
 test.describe("try a sample", () => {
   test("loads sample resume and job description with zero input", async ({
     page,

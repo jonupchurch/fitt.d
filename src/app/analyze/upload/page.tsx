@@ -6,14 +6,22 @@ import { ResumeIcon } from "@/components/icons";
 import { useWizard } from "../wizard-context";
 import { submitResume } from "./actions";
 
+const SOURCE_LABELS: Record<string, string> = {
+  paste: "Pasted text",
+  pdf: "PDF",
+  docx: "DOCX",
+  txt: "TXT",
+};
+
 export default function UploadPage() {
   const router = useRouter();
-  const { setResume } = useWizard();
+  const { setResume, resume } = useWizard();
   const [file, setFile] = useState<File | null>(null);
   const [pastedText, setPastedText] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const canSubmit =
@@ -48,7 +56,40 @@ export default function UploadPage() {
     }
 
     setResume(result.data);
+    setIsEditing(false);
     router.push("/analyze/job");
+  }
+
+  function startEditing() {
+    setFile(null);
+    setPastedText("");
+    setError(null);
+    setIsEditing(true);
+  }
+
+  if (resume && !isEditing) {
+    return (
+      <div className="flex flex-col items-center gap-4 rounded-2xl border border-n-200 bg-white px-6 py-12 text-center">
+        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-strong text-xl text-white">
+          ✓
+        </span>
+        <h1 className="font-display text-2xl font-extrabold text-ink">
+          Resume ready
+        </h1>
+        <p className="max-w-md text-sm text-n-600">
+          A resume ({SOURCE_LABELS[resume.sourceFormat] ?? resume.sourceFormat}
+          , {resume.sizeChars.toLocaleString()} characters) is saved for this
+          session.
+        </p>
+        <button
+          type="button"
+          onClick={startEditing}
+          className="rounded-full border border-brand px-5 py-2 text-sm font-semibold text-brand-strong transition-colors hover:bg-cyan-50"
+        >
+          Replace resume
+        </button>
+      </div>
+    );
   }
 
   return (
@@ -57,7 +98,7 @@ export default function UploadPage() {
         <ResumeIcon className="h-8 w-8 flex-none text-brand" aria-hidden="true" />
         <div>
           <h1 className="font-display text-2xl font-extrabold text-ink">
-            Upload your resume
+            {resume ? "Replace your resume" : "Upload your resume"}
           </h1>
           <p className="text-sm text-n-600">
             PDF, DOCX, or TXT — or paste the text directly below.
@@ -132,14 +173,25 @@ export default function UploadPage() {
         <p className="text-xs text-n-600">
           🔒 Analyzed in-session · never stored
         </p>
-        <button
-          type="button"
-          onClick={handleSubmit}
-          disabled={!canSubmit}
-          className="rounded-full bg-brand-strong px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:bg-n-300"
-        >
-          {isSubmitting ? "Analyzing…" : "Continue →"}
-        </button>
+        <div className="flex items-center gap-3">
+          {resume && isEditing ? (
+            <button
+              type="button"
+              onClick={() => setIsEditing(false)}
+              className="text-sm font-semibold text-n-600 hover:text-ink"
+            >
+              Cancel
+            </button>
+          ) : null}
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={!canSubmit}
+            className="rounded-full bg-brand-strong px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:bg-n-300"
+          >
+            {isSubmitting ? "Analyzing…" : "Continue →"}
+          </button>
+        </div>
       </div>
     </div>
   );

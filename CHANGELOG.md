@@ -382,3 +382,22 @@ All 25 tasks complete, all four quality-bar checks green (`typecheck`,
 - `next.config.ts` gained a second `outputFileTracingIncludes` entry
   (`prompts/**` for the `/analyze/job` route) — the same dynamic-
   `fs.readFile` tracing concern as feature 001's sample fixtures.
+
+## 2026-07-05 — Fix: edit/replace resume and job description mid-flow
+
+Resolves the `docs/future-work.md` item logged after feature 001 —
+surfaced as a real blocker while testing feature 002 live (the app got
+"stuck" showing a previously-saved job description with no way to
+change it).
+
+- `/analyze/upload` and `/analyze/job` both now show a "ready" summary
+  with an explicit "Replace resume" / "Change job description" button
+  once a value is saved, reopening the form (pre-filled for the JD)
+  with a "Cancel" option to back out.
+- The wizard progress bar's steps are now real clickable links —
+  they were rendered but never actually wired to navigate, a leftover
+  gap from feature 001 (the wireframe's own "completed steps become
+  clickable to jump back" note was never finished).
+- 4 new Playwright tests cover editing, canceling, replacing, and
+  progress-bar navigation. All 22 e2e tests, 32 Vitest tests,
+  typecheck, lint, eval, and build remain green.
