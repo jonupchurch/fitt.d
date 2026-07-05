@@ -1,32 +1,18 @@
 <!--
 Sync Impact Report
 ==================
-Version change: 1.1.0 → 1.2.0
+Version change: 1.2.0 → 1.3.0
 Modified principles:
-  - IV. Product Judgment & Scope Discipline — MVP scope reaffirmed as-is
-    (the expanded, wireframe-matching boundary from 1.1.0 stands); "match
-    score" renamed to "fit score" throughout; added a one-click "Try a
-    sample" live-analysis feature to the MVP description.
-  - V. Test Discipline — added a MUST for an eval harness (schema
-    validity, required-skill recall, no-hallucinated-matches, score
-    plausibility) as a CI gate, run against a deterministic fake provider.
-  - II. Full-Stack Substance — added a MUST for versioned prompt files
-    (never inline strings; a behavior change is a new version).
+  - VI. Legible History — added a MUST for CHANGELOG.md to be updated
+    alongside every significant push, as the curated narrative layer on
+    top of raw commit history.
 Added sections: none
 Removed sections: none
-Other changes:
-  - Technology Constraints: package manager pinned to npm.
-  - Governance: license (MIT) recorded.
-  - Noted: a separately-authored reference bundle (ADRs, README, evals,
-    prompts scaffolding) exists in Resources/ as prior art; the committed
-    docs/adr/, README, prompts/, and evals/ will be authored/reconciled
-    during /speckit-plan rather than imported verbatim, per Principle I.
+Other changes: none
 Templates requiring updates:
   ✅ .specify/templates/plan-template.md — no hardcoded principle names.
   ✅ .specify/templates/spec-template.md — still compatible.
   ✅ .specify/templates/tasks-template.md — still compatible.
-  ⚠ README.md — still not authored yet; to be produced during /speckit-plan
-    per the Governance note above.
 Follow-up TODOs: none.
 -->
 
@@ -133,10 +119,17 @@ rare signal in a portfolio project and is cheap once fixtures exist.
 Commits MUST use Conventional Commits prefixes (`feat`, `fix`, `docs`,
 `test`, `chore`, `refactor`) and each commit MUST be one logical, atomic,
 self-contained change, mapped to a `tasks.md` item where practical.
+`CHANGELOG.md` at the repo root MUST be updated alongside every
+significant push — a feature, a constitution amendment, a meaningful
+resource or doc addition — summarizing what shipped in human-readable
+terms and linking the relevant commit(s). Trivial pushes (typo fixes,
+formatting) don't need an entry.
 
 Rationale: a reviewer should be able to read `git log --oneline` and watch
 the plan become code — the commit history is part of the legible-process
-story from Principle I.
+story from Principle I. `CHANGELOG.md` is the curated narrative layer on
+top of that raw history, for a reader who wants the story without reading
+every diff.
 
 ## Technology Constraints
 
@@ -191,4 +184,4 @@ Principle I, committed ADRs and the README are authored (or substantively
 reconciled) through this project's own process so the "process produced
 this" record stays genuine.
 
-**Version**: 1.2.0 | **Ratified**: 2026-07-05 | **Last Amended**: 2026-07-05
+**Version**: 1.3.0 | **Ratified**: 2026-07-05 | **Last Amended**: 2026-07-05

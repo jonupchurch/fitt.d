@@ -21,3 +21,6 @@ Complements `git log` and the Spec Kit artifacts (`.specify/memory/constitution.
   ADRs/README/prompts/evals) kept as prior art for the planning phase.
 - `docs: add CHANGELOG.md` — added this file to track the project's
   evolution across pushes going forward.
+- `docs: require CHANGELOG.md updates in the constitution` — ratified
+  Fitt.d constitution v1.3.0, amending Principle VI (Legible History) to
+  MUST-require a CHANGELOG.md entry alongside every significant push.
