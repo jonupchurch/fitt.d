@@ -273,3 +273,15 @@ each completed Spec Kit phase rather than waiting to be asked.
 - Constitution Principle II is explicitly N/A for this feature (no
   backend to speak of) — same reasoning feature 000 used for its own
   scaffolding-only scope.
+
+## 2026-07-05 — Feature 005: Side-by-Side Comparison & Export (tasks)
+
+- `specs/005-comparison-export/tasks.md` — 21 tasks. No Foundational
+  phase: each of the four user stories (P1 comparison, P2 export, P3
+  `.docx` download, P4 try-another-job) maps to its own independent
+  utility and control, so — a first for this project — entire stories
+  can be built in parallel rather than in priority sequence. Polish (6)
+  covers a11y, e2e, the two owed ADRs, quickstart, and CHANGELOG.
+- **This closes out full planning for the MVP.** Specs 001–005 all now
+  have committed `plan.md` + `tasks.md`. Per the project's agreed
+  workflow, `/speckit-implement` becomes available to start.
