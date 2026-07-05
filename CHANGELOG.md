@@ -185,3 +185,23 @@ each completed Spec Kit phase rather than waiting to be asked.
   feedback + strengths/weaknesses, P3 rewrite suggestions); Polish (5:
   a11y, e2e, the ADR, quickstart, CHANGELOG). Suggested MVP slice is
   User Story 1 alone.
+
+## 2026-07-05 — Feature 004: Gap Analysis & Tailoring Output (spec)
+
+- `specs/004-gap-analysis-tailoring/spec.md` — compares `JDAnalysis`
+  (002) and `ResumeAnalysis` (003) into a `GapAnalysis` (fit score,
+  matched/missing skills with evidence and priority, ATS keyword
+  coverage, rationale), then generates a `TailoringOutput` (rewritten
+  bullets, summary, keywords, cover-letter opener) with a one-click
+  Apply into a `WorkingResumeCopy`. First feature with a real
+  cross-feature dependency (needs both 002 and 003 complete) — resolved
+  with a documented waiting state rather than blocking navigation.
+  Three user stories: P1 fit score + matched/missing skills, P2 gap
+  advice, P3 tailored rewrites + Apply. Checklist passed clean.
+- **Scope boundary vs. feature 005**: the approved wireframe's "Match &
+  comparison" screen (Screen 05) also shows a side-by-side resume↔JD
+  diff view and export buttons — those stay feature 005's scope per
+  `docs/data-model.md`'s entity ownership; 004 stops at producing
+  `GapAnalysis`/`TailoringOutput` and the Apply mechanic.
+- Reuses feature 002's provider/rate-limit/validation infrastructure;
+  the rate limit is one shared budget across all analysis endpoints.
