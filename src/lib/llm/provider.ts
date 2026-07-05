@@ -35,6 +35,10 @@ export async function generateStructured<T>(options: {
     return { ok: true, data: output };
   } catch (firstError) {
     if (!NoObjectGeneratedError.isInstance(firstError)) {
+      // Never thrown to the caller (Result is typed, not an exception),
+      // so without this the underlying cause (auth, billing, model
+      // availability) is otherwise invisible in Vercel's runtime logs.
+      console.error("generateStructured: provider call failed", firstError);
       return { ok: false, reason: "provider_error" };
     }
 
@@ -50,6 +54,10 @@ export async function generateStructured<T>(options: {
       if (NoObjectGeneratedError.isInstance(secondError)) {
         return { ok: false, reason: "invalid_output" };
       }
+      console.error(
+        "generateStructured: provider call failed on repair retry",
+        secondError,
+      );
       return { ok: false, reason: "provider_error" };
     }
   }
