@@ -97,3 +97,35 @@ before `/speckit-specify` resumes on feature `001`.
   Foundational, three user-story phases (P1 resume input, P2 job
   description input, P3 "Try a sample"), and Polish. Suggested MVP
   slice is User Story 1 alone.
+
+## 2026-07-05 — Feature 002: Job Description Analysis (spec & plan)
+
+Per the agreed workflow, all of features 001–005 get specified, planned,
+and tasked before any of them are implemented — feature 000 was the
+explicit exception. This entry covers 002's spec and plan together, and
+going forward CHANGELOG updates + commits happen automatically after
+each completed Spec Kit phase rather than waiting to be asked.
+
+- `specs/002-jd-analysis/spec.md` — analyze the `JobDescription` from
+  001 into a `JDAnalysis` (required/nice-to-have skills, responsibilities,
+  inferred seniority, ATS keywords, notable signals), surfaced as the
+  live keyword-detection preview on the `/analyze/job` screen. Three
+  user stories: P1 live skill/keyword preview, P2 seniority/
+  responsibilities/notable signals, P3 preview stays fresh on edits.
+  Checklist passed clean, no `[NEEDS CLARIFICATION]` markers.
+- `specs/002-jd-analysis/plan.md`, `research.md`, `contracts/actions.md`,
+  `quickstart.md` — the first feature calling the LLM provider, so it
+  sets the pattern 003–005 reuse: the Vercel AI SDK via the AI Gateway
+  (a `"anthropic/claude-<version>"` model string, not a direct provider
+  SDK — current Vercel platform guidance, and a deliberate improvement
+  over the reference bundle's draft ADR), Zod validation with one
+  bounded repair-retry, and a hybrid response strategy (structured JSON
+  blocks-until-validated with a skeleton state; only prose features
+  later in the pipeline will actually token-stream). Rate limiting is a
+  simple in-memory per-IP counter — an explicit, documented tradeoff at
+  this project's traffic scale, not a hidden shortcut.
+- Three ADRs owed during implementation: `docs/adr/0002` (provider
+  abstraction), `0003` (output validation & retry), `0004` (response
+  delivery strategy) — continuing feature 001's `0001`.
+- Flagged for implementation: `.env.example`'s `FITTD_MODEL` needs
+  updating from a bare model name to a Gateway-qualified string.
