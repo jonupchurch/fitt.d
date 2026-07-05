@@ -205,3 +205,25 @@ each completed Spec Kit phase rather than waiting to be asked.
   `GapAnalysis`/`TailoringOutput` and the Apply mechanic.
 - Reuses feature 002's provider/rate-limit/validation infrastructure;
   the rate limit is one shared budget across all analysis endpoints.
+
+## 2026-07-05 — Feature 004: Gap Analysis & Tailoring Output (plan)
+
+- `specs/004-gap-analysis-tailoring/plan.md`, `research.md`,
+  `contracts/actions.md`, `quickstart.md`. **Confirmed via the `ai-sdk`
+  skill's current guidance** (not assumed): AI SDK v6 removed
+  `generateObject`/`streamObject` in favor of `generateText`/
+  `streamText` with `output: Output.object({ schema })` — resolves the
+  API-verification deferral noted in feature 002's `research.md`.
+- **Key decision**: tailoring output uses **schema-validated
+  streaming** (`streamText` + `Output.object`), not the reference
+  bundle's draft raw-markdown streaming — a deliberate reconciliation
+  with Constitution Principle II's unconditional Zod-validation
+  requirement. One ADR owed: `docs/adr/0006-tailoring-output-streaming-validation.md`.
+  Gap analysis reuses the blocking pattern from 002/003 as-is; no new
+  ADR needed for it.
+- `WorkingResumeCopy` is pure client-side (`sessionStorage`) state,
+  applying the Constitution's Technology Constraints rather than
+  deciding anything new — Apply needs no Server Action.
+- Adds a waiting/pending state for when a candidate reaches this
+  screen before both prerequisite analyses (002, 003) have completed —
+  the first feature with a real cross-feature runtime dependency.
