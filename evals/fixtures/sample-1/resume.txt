@@ -1,0 +1,30 @@
+Jane Doe
+Software Engineer
+jane.doe@email.com · (555) 123-4567 · San Francisco, CA
+
+Summary
+Full-stack software engineer with 5 years of experience building and
+scaling web applications. Comfortable across the stack, with a focus
+on frontend architecture and developer experience.
+
+Experience
+
+Senior Software Engineer — Northwind Analytics (2022–Present)
+- Led the migration of a legacy jQuery dashboard to a React + TypeScript
+  single-page app, cutting page load time by 40%.
+- Built a reusable component library adopted by three product teams.
+- Mentored two junior engineers through their first year.
+
+Software Engineer — Brightline Software (2019–2022)
+- Developed REST APIs in Node.js/Express for a logistics tracking
+  platform.
+- Wrote unit and integration tests, raising test coverage from 45% to
+  80%.
+- Collaborated with designers to implement a new onboarding flow.
+
+Skills
+JavaScript, TypeScript, React, Node.js, Express, PostgreSQL, Git, Jest,
+CSS, HTML
+
+Education
+B.S. Computer Science — State University (2019)

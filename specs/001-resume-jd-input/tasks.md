@@ -23,7 +23,7 @@ description: "Task list for feature 001 - Resume & Job Description Input"
 
 **Purpose**: Pull in this feature's new dependencies — nothing else can start until they exist.
 
-- [ ] T001 Add `zod`, `unpdf`, and `mammoth` as dependencies in `package.json`, run `npm install`, and commit the updated `package-lock.json`
+- [X] T001 Add `zod`, `unpdf`, and `mammoth` as dependencies in `package.json`, run `npm install`, and commit the updated `package-lock.json`
 
 **Checkpoint**: New dependencies installed; no application code changed yet.
 
@@ -35,10 +35,10 @@ description: "Task list for feature 001 - Resume & Job Description Input"
 
 **⚠️ CRITICAL**: No user story can be implemented until this phase is complete.
 
-- [ ] T002 Define `Resume` and `JobDescription` Zod schemas plus the shared `Result<T>` / `InputErrorCode` types in `src/lib/input/schemas.ts` (shapes per `docs/data-model.md`, contract per `contracts/actions.md`)
-- [ ] T003 [P] Implement shared char-limit validation in `src/lib/input/validate-text.ts` — resume 20,000 char cap, job description 12,000 char cap (`docs/non-functional.md`), rejecting empty/whitespace-only input (depends on: T002)
-- [ ] T004 [P] Vitest tests for `validate-text.ts` covering resume and job-description edge cases (empty, whitespace-only, at-limit, over-limit) in `tests/input/validate-text.test.ts` (depends on: T003)
-- [ ] T005 Build the `/analyze` wizard shell in `src/app/analyze/layout.tsx`: progress bar UI plus a `sessionStorage`-backed client context holding the in-progress `Resume`/`JobDescription` state (depends on: T002)
+- [X] T002 Define `Resume` and `JobDescription` Zod schemas plus the shared `Result<T>` / `InputErrorCode` types in `src/lib/input/schemas.ts` (shapes per `docs/data-model.md`, contract per `contracts/actions.md`)
+- [X] T003 [P] Implement shared char-limit validation in `src/lib/input/validate-text.ts` — resume 20,000 char cap, job description 12,000 char cap (`docs/non-functional.md`), rejecting empty/whitespace-only input (depends on: T002)
+- [X] T004 [P] Vitest tests for `validate-text.ts` covering resume and job-description edge cases (empty, whitespace-only, at-limit, over-limit) in `tests/input/validate-text.test.ts` (depends on: T003)
+- [X] T005 Build the `/analyze` wizard shell in `src/app/analyze/layout.tsx`: progress bar UI plus a `sessionStorage`-backed client context holding the in-progress `Resume`/`JobDescription` state (depends on: T002)
 
 **Checkpoint**: Shared schemas, validation, and wizard shell exist — user story implementation can begin.
 
@@ -52,14 +52,14 @@ description: "Task list for feature 001 - Resume & Job Description Input"
 
 ### Tests for User Story 1
 
-- [ ] T006 [P] [US1] Vitest tests for `parse-file.ts` covering unsupported format, oversized file, valid PDF/DOCX/TXT extraction, and an unparseable (image-only) PDF in `tests/input/parse-file.test.ts`
+- [X] T006 [P] [US1] Vitest tests for `parse-file.ts` covering unsupported format, oversized file, valid PDF/DOCX/TXT extraction, and an unparseable (image-only) PDF in `tests/input/parse-file.test.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T007 [US1] Implement file type/size validation and PDF (`unpdf`) / DOCX (`mammoth`) text extraction in `src/lib/input/parse-file.ts` (5MB cap per the approved wireframe) (depends on: T002)
-- [ ] T008 [US1] Implement the `submitResume` Server Action in `src/app/analyze/upload/actions.ts` per `contracts/actions.md` (depends on: T002, T003, T007)
-- [ ] T009 [US1] Build the resume upload/paste page in `src/app/analyze/upload/page.tsx`: drag-and-drop zone + "Browse files" + paste-text fallback + privacy note ("analyzed in-session, never stored") + proceed action disabled until valid input exists, calling `submitResume` and updating the wizard context on success (depends on: T005, T008)
-- [ ] T010 [P] [US1] Add the "Analyze my resume" primary CTA to the home route `src/app/page.tsx`, linking to `/analyze/upload`
+- [X] T007 [US1] Implement file type/size validation and PDF (`unpdf`) / DOCX (`mammoth`) text extraction in `src/lib/input/parse-file.ts` (5MB cap per the approved wireframe) (depends on: T002)
+- [X] T008 [US1] Implement the `submitResume` Server Action in `src/app/analyze/upload/actions.ts` per `contracts/actions.md` (depends on: T002, T003, T007)
+- [X] T009 [US1] Build the resume upload/paste page in `src/app/analyze/upload/page.tsx`: drag-and-drop zone + "Browse files" + paste-text fallback + privacy note ("analyzed in-session, never stored") + proceed action disabled until valid input exists, calling `submitResume` and updating the wizard context on success (depends on: T005, T008)
+- [X] T010 [P] [US1] Add the "Analyze my resume" primary CTA to the home route `src/app/page.tsx`, linking to `/analyze/upload`
 
 **Checkpoint**: User Story 1 is fully functional and independently testable — resume upload or paste reaches a ready state.
 
@@ -73,8 +73,8 @@ description: "Task list for feature 001 - Resume & Job Description Input"
 
 ### Implementation for User Story 2
 
-- [ ] T011 [US2] Implement the `submitJobDescription` Server Action in `src/app/analyze/job/actions.ts` per `contracts/actions.md` (depends on: T002, T003)
-- [ ] T012 [US2] Build the job description page in `src/app/analyze/job/page.tsx`: optional job title/company fields + paste textarea + proceed action disabled until valid text exists, calling `submitJobDescription` and updating the wizard context on success — **no live keyword-detection preview** (that UI is `JDAnalysis`, feature 002's scope per `spec.md` Assumptions) (depends on: T005, T011)
+- [X] T011 [US2] Implement the `submitJobDescription` Server Action in `src/app/analyze/job/actions.ts` per `contracts/actions.md` (depends on: T002, T003)
+- [X] T012 [US2] Build the job description page in `src/app/analyze/job/page.tsx`: optional job title/company fields + paste textarea + proceed action disabled until valid text exists, calling `submitJobDescription` and updating the wizard context on success — **no live keyword-detection preview** (that UI is `JDAnalysis`, feature 002's scope per `spec.md` Assumptions) (depends on: T005, T011)
 
 **Checkpoint**: User Stories 1 and 2 both independently functional.
 
@@ -88,10 +88,10 @@ description: "Task list for feature 001 - Resume & Job Description Input"
 
 ### Implementation for User Story 3
 
-- [ ] T013 [US3] Author the bundled sample fixture content: `evals/fixtures/sample-1/resume.txt` and `evals/fixtures/sample-1/job-description.txt` (the fixture's `expected` field stays a documented stub — see `research.md`)
-- [ ] T014 [US3] Implement the `loadSampleFixture` Server Action in `src/lib/input/sample-fixture.ts` per `contracts/actions.md` (depends on: T002, T013)
-- [ ] T015 [US3] Add the "Try a sample" secondary CTA to the home route `src/app/page.tsx`, calling `loadSampleFixture` and populating the wizard context identically to manual input (FR-008) (depends on: T005, T014; touches the same file as T010 — sequence after it, don't edit in parallel)
-- [ ] T016 [P] [US3] Vitest test asserting `loadSampleFixture`'s output shape matches `submitResume`/`submitJobDescription`'s (FR-008) in `tests/input/sample-fixture.test.ts` (depends on: T014)
+- [X] T013 [US3] Author the bundled sample fixture content: `evals/fixtures/sample-1/resume.txt` and `evals/fixtures/sample-1/job-description.txt` (the fixture's `expected` field stays a documented stub — see `research.md`)
+- [X] T014 [US3] Implement the `loadSampleFixture` Server Action in `src/lib/input/sample-fixture.ts` per `contracts/actions.md` (depends on: T002, T013)
+- [X] T015 [US3] Add the "Try a sample" secondary CTA to the home route `src/app/page.tsx`, calling `loadSampleFixture` and populating the wizard context identically to manual input (FR-008) (depends on: T005, T014; touches the same file as T010 — sequence after it, don't edit in parallel)
+- [X] T016 [P] [US3] Vitest test asserting `loadSampleFixture`'s output shape matches `submitResume`/`submitJobDescription`'s (FR-008) in `tests/input/sample-fixture.test.ts` (depends on: T014)
 
 **Checkpoint**: All three user stories independently functional — feature complete.
 
@@ -101,11 +101,11 @@ description: "Task list for feature 001 - Resume & Job Description Input"
 
 **Purpose**: Wrap-up items spanning all three stories.
 
-- [ ] T017 [P] Extend `e2e/accessibility.spec.ts` to also check `/analyze/upload` and `/analyze/job` (currently scoped to `/` only)
-- [ ] T018 Add `e2e/analyze-input.spec.ts`: Playwright test covering the upload, paste, and "Try a sample" paths reaching a ready state (per `quickstart.md`)
-- [ ] T019 Author `docs/adr/0001-resume-jd-input-validation.md`, capturing the file-parsing-library and validation/error-model decisions (Constitution Principle I obligation identified in `plan.md`; content drawn from `research.md`)
-- [ ] T020 Run `quickstart.md` end-to-end and confirm every scenario passes
-- [ ] T021 Add a `CHANGELOG.md` entry summarizing feature 001 (Constitution Principle VI), included in the push that closes this feature
+- [X] T017 [P] Extend `e2e/accessibility.spec.ts` to also check `/analyze/upload` and `/analyze/job` (currently scoped to `/` only)
+- [X] T018 Add `e2e/analyze-input.spec.ts`: Playwright test covering the upload, paste, and "Try a sample" paths reaching a ready state (per `quickstart.md`)
+- [X] T019 Author `docs/adr/0001-resume-jd-input-validation.md`, capturing the file-parsing-library and validation/error-model decisions (Constitution Principle I obligation identified in `plan.md`; content drawn from `research.md`)
+- [X] T020 Run `quickstart.md` end-to-end and confirm every scenario passes
+- [X] T021 Add a `CHANGELOG.md` entry summarizing feature 001 (Constitution Principle VI), included in the push that closes this feature
 
 ---
 

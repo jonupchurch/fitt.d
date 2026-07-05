@@ -285,3 +285,48 @@ each completed Spec Kit phase rather than waiting to be asked.
 - **This closes out full planning for the MVP.** Specs 001–005 all now
   have committed `plan.md` + `tasks.md`. Per the project's agreed
   workflow, `/speckit-implement` becomes available to start.
+
+## 2026-07-05 — Feature 001: Resume & Job Description Input (implemented)
+
+First implemented feature — all 21 tasks complete, all four quality-bar
+checks green (`typecheck`, `lint`, `test`, `test:e2e`).
+
+- Home page gained real "Analyze my resume" and "Try a sample" CTAs;
+  `/analyze/upload` (drag-and-drop + paste, PDF/DOCX/TXT via `unpdf`/
+  `mammoth`) and `/analyze/job` (paste + optional title/company) are
+  live, sharing a wizard shell (`src/app/analyze/layout.tsx`) with a
+  4-step progress indicator (steps not yet built are shown upcoming,
+  not omitted).
+- Shared `Result<T>`/`InputErrorCode` validation pattern
+  (`src/lib/input/schemas.ts`) now backs both Server Actions
+  (`submitResume`, `submitJobDescription`) and the sample-data path
+  (`loadSampleFixture`, reading `evals/fixtures/sample-1/`) — all three
+  produce identically-shaped output, per FR-008.
+- `docs/adr/0001-resume-jd-input-validation.md` written and indexed —
+  the parsing-library choices and the `Result<T>` error model, as
+  planned.
+- **Two real fixes surfaced during implementation, not planning:**
+  - The wizard's `sessionStorage` sync originally used
+    `useEffect`+`setState` (as planned in `research.md`); the newer
+    `react-hooks/set-state-in-effect` lint rule flagged the cascading-
+    render pattern, so it was rebuilt on `useSyncExternalStore` instead
+    — React's own recommended pattern for browser-storage-backed state,
+    and a cleaner fix than suppressing the rule.
+  - Several buttons/accents used `bg-brand`/`text-brand` (cyan-500),
+    which the brand guide itself flags as failing WCAG AA for text —
+    axe caught it immediately. Fixed by using `brand-strong` (cyan-700)
+    for anything carrying readable text, reserving cyan-500 for
+    accents/fills paired with ink text, per the guide's own rule.
+  - Adding `evals/fixtures/sample-1/` (the shared "Try a sample" +
+    eval-harness fixture) broke feature 000's eval harness, which
+    treated *any* fixture directory as eval-ready and failed with
+    "pipeline not implemented yet." Fixed by only counting directories
+    that contain an `expected.json` as scorable — `sample-1` has none
+    yet (deferred to 004/005), so `npm run eval` still passes cleanly.
+- Real-file verification: the PDF path is exercised end-to-end in
+  Playwright against a genuinely valid generated PDF (not a mock) to
+  confirm the real `unpdf` integration, not just the mocked Vitest
+  unit tests.
+- `next.config.ts` now explicitly traces `evals/fixtures/sample-1/**`
+  into the deployed bundle — a dynamic `fs.readFile` call isn't always
+  picked up by Vercel's automatic file tracing.

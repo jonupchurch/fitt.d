@@ -1,0 +1,25 @@
+Senior Frontend Engineer
+Acme Cloud — Remote
+
+We're looking for a Senior Frontend Engineer to help modernize our
+customer-facing dashboard. You'll work closely with design and backend
+teams to ship fast, accessible, well-tested interfaces.
+
+Responsibilities
+- Build and maintain React/TypeScript applications used by thousands of
+  customers daily.
+- Own frontend architecture decisions, including state management and
+  component design.
+- Partner with backend engineers on API design.
+- Mentor other engineers and contribute to a strong engineering culture.
+
+Requirements
+- 4+ years of professional experience with React and TypeScript.
+- Strong understanding of accessibility (WCAG) best practices.
+- Experience with automated testing (unit and end-to-end).
+- Familiarity with cloud infrastructure (AWS, GCP, or Azure) is a plus.
+- Experience with Kubernetes or container orchestration is a plus.
+
+Nice to have
+- Experience with design systems.
+- Familiarity with Next.js or similar meta-frameworks.

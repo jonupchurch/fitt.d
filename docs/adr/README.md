@@ -10,9 +10,6 @@ Format: lightweight [MADR](https://adr.github.io/madr/). Status is one of
 
 | # | Decision | Status |
 |---|---|---|
-
-*(Empty by design — feature `000` is pure infrastructure with no product-
-architecture tradeoffs. The first entry arrives with feature `002`'s
-LLM-provider abstraction.)*
+| [0001](0001-resume-jd-input-validation.md) | Resume/JD input parsing and validation strategy (feature 001) | Accepted |
 
 New decision? Copy `0000-template.md`.
