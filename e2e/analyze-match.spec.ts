@@ -8,9 +8,7 @@ async function completeBothAnalyses(
   await page.goto("/analyze/upload");
   await page.getByLabel("Paste resume text").fill(resumeText);
   await page.getByRole("button", { name: /continue/i }).click();
-  await expect(page).toHaveURL("/analyze/job");
-
-  await page.goto("/analyze/report");
+  await expect(page).toHaveURL("/analyze/report");
   await expect(page.getByText("ATS / formatting checks")).toBeVisible();
 
   await page.goto("/analyze/job");
@@ -28,19 +26,28 @@ test.describe("match & comparison", () => {
     ).toBeVisible();
   });
 
-  test("shows a waiting state naming both pending analyses when neither is ready", async ({
+  test("shows a waiting state naming the job-description analysis when resume analysis is ready but JD isn't", async ({
     page,
   }) => {
+    // Note: with ADR-0009's hard gate, "neither analysis ready" is no
+    // longer reachable at /analyze/match via normal navigation — you'd
+    // be redirected back to /analyze/report first. This is the one
+    // waiting-state combination still reachable (feature 004's own
+    // FR-011, unaffected by ADR-0009).
     await page.goto("/analyze/upload");
     await page.getByLabel("Paste resume text").fill("Jane Doe\nEngineer.");
     await page.getByRole("button", { name: /continue/i }).click();
-    await expect(page).toHaveURL("/analyze/job");
+    await expect(page).toHaveURL("/analyze/report");
+    await expect(page.getByText("ATS / formatting checks")).toBeVisible();
 
     await page.goto("/analyze/match");
     await expect(page.getByText(/still waiting on/i)).toBeVisible();
     await expect(
-      page.getByRole("link", { name: /go to resume analysis/i }),
+      page.getByText(/the job description analysis/i),
     ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: /go to resume analysis/i }),
+    ).not.toBeVisible();
     await expect(
       page.getByRole("link", { name: /go to job description/i }),
     ).toBeVisible();
@@ -95,7 +102,7 @@ test.describe("match & comparison", () => {
     await expect(page.getByText("Matched skills")).not.toBeVisible();
   });
 
-  test("progress bar links to Match once both analyses exist", async ({
+  test("progress bar links to fitt.d once both analyses exist", async ({
     page,
   }) => {
     await completeBothAnalyses(
@@ -105,7 +112,7 @@ test.describe("match & comparison", () => {
     );
 
     await page.goto("/analyze/upload");
-    await page.getByRole("link", { name: /match/i }).click();
+    await page.getByRole("link", { name: /fitt\.d/i }).click();
     await expect(page).toHaveURL("/analyze/match");
   });
 });

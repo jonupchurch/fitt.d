@@ -29,7 +29,10 @@ export function TrySampleButton() {
     // (FR-008) — the wizard layout's context reads it fresh on mount.
     setStoredResume(result.data.resume);
     setStoredJobDescription(result.data.jobDescription);
-    router.push("/analyze/job");
+    // The sample resume still needs its own analysis run (no canned
+    // ResumeAnalysis is set here) — land on /analyze/report like a real
+    // upload does, so the same navigation gate applies (ADR-0009).
+    router.push("/analyze/report");
   }
 
   return (

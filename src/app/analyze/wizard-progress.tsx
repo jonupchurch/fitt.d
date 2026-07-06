@@ -12,20 +12,37 @@ type Step = {
 
 export function WizardProgress() {
   const pathname = usePathname();
-  const { resume, jobDescription, jdAnalysis, resumeAnalysis } = useWizard();
+  const { resume, jobDescription, jdAnalysis, resumeAnalysis, resumeAnalysisFailed } =
+    useWizard();
+
+  // Per ADR-0009 / spec.md FR-011 (amended): while a resume exists but
+  // its analysis has neither succeeded nor failed yet, Job desc. and
+  // Match are unreachable — rendered as inert (no href) rather than
+  // linked. resume-analysis-gate.tsx enforces the same rule for direct
+  // navigation (typed URLs, back/forward).
+  const resumeAnalysisPending =
+    resume !== null && resumeAnalysis === null && !resumeAnalysisFailed;
 
   const steps: Step[] = [
     { label: "Upload", href: "/analyze/upload", done: resume !== null },
     // Unlike Upload/Job desc., this step has no input of its own to
-    // submit — "done" here means the analysis is available to view
-    // (a resume exists), not that the candidate has viewed it yet.
-    { label: "Analysis", href: "/analyze/report", done: resume !== null },
-    { label: "Job desc.", href: "/analyze/job", done: jobDescription !== null },
-    // Same "available, not necessarily viewed" semantic as Analysis —
-    // Match depends on both prior analyses existing (spec.md FR-011).
+    // submit — "done" means the analysis has actually resolved, not
+    // just that a resume exists to analyze.
     {
-      label: "Match",
-      href: "/analyze/match",
+      label: "Resume analyzed",
+      href: "/analyze/report",
+      done: resumeAnalysis !== null,
+    },
+    {
+      label: "Job desc.",
+      href: resumeAnalysisPending ? null : "/analyze/job",
+      done: jobDescription !== null,
+    },
+    // "done" here means both analyses are ready to compare, not that
+    // the candidate has actually opened/viewed the fitt.d match yet.
+    {
+      label: "fitt.d",
+      href: resumeAnalysisPending ? null : "/analyze/match",
       done: jdAnalysis !== null && resumeAnalysis !== null,
     },
   ];

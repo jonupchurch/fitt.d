@@ -47,9 +47,12 @@ Run `npm run dev`, provide a resume (feature 001), reach `/analyze/report`:
 7. **Rate limit shared with JD analysis (FR-009)**: trigger the shared
    6/minute limit via resume analysis calls, then confirm a JD-analysis
    call in the same window is also rate-limited (same counter).
-8. **Progression not blocked (FR-011)**: the candidate can proceed to
-   the job-description step whether or not resume analysis has
-   finished.
+8. **Progression blocked until resolved (FR-011, amended 2026-07-06 —
+   see ADR-0009)**: the candidate cannot reach the job-description step
+   or Match while resume analysis is still in flight — attempting to
+   (progress-bar link, direct URL) redirects back to the resume-analysis
+   screen. Once the analysis resolves (success or failure), navigation
+   is unblocked.
 
 ## Privacy check
 

@@ -4,6 +4,11 @@ import type { GapAnalysis, JDAnalysis, ResumeAnalysis } from "./schemas";
 export type FakeTaskId = "jd-analysis" | "resume-analysis";
 
 const FAKE_ERROR_TRIGGER = "trigger_fake_error";
+// e2e-only: lets a test deterministically observe the "analysis still
+// pending" window (e.g. the navigation gate from ADR-0009) instead of
+// racing the fake provider's otherwise near-instant resolution.
+const SLOW_ANALYSIS_TRIGGER = "trigger_slow_analysis";
+const SLOW_ANALYSIS_DELAY_MS = 800;
 
 const JD_DEV_FIXTURE: JDAnalysis = {
   requiredSkills: ["React", "TypeScript"],
@@ -80,27 +85,31 @@ const RESUME_DEV_FIXTURE: ResumeAnalysis = {
 export function devFakeAnalysis(
   taskId: "jd-analysis",
   text: string,
-): ProviderResult<JDAnalysis>;
+): Promise<ProviderResult<JDAnalysis>>;
 export function devFakeAnalysis(
   taskId: "resume-analysis",
   text: string,
-): ProviderResult<ResumeAnalysis>;
-export function devFakeAnalysis(
+): Promise<ProviderResult<ResumeAnalysis>>;
+export async function devFakeAnalysis(
   taskId: FakeTaskId,
   text: string,
-): ProviderResult<JDAnalysis> | ProviderResult<ResumeAnalysis> {
-  if (text.toLowerCase().includes(FAKE_ERROR_TRIGGER)) {
+): Promise<ProviderResult<JDAnalysis> | ProviderResult<ResumeAnalysis>> {
+  const lowerAll = text.toLowerCase();
+  if (taskId === "resume-analysis" && lowerAll.includes(SLOW_ANALYSIS_TRIGGER)) {
+    await new Promise((resolve) => setTimeout(resolve, SLOW_ANALYSIS_DELAY_MS));
+  }
+
+  if (lowerAll.includes(FAKE_ERROR_TRIGGER)) {
     return { ok: false, reason: "invalid_output" };
   }
 
   if (taskId === "jd-analysis") {
-    const lower = text.toLowerCase();
     const notableSignals: string[] = [];
-    if (lower.includes("kubernetes")) notableSignals.push("Mentions Kubernetes");
+    if (lowerAll.includes("kubernetes")) notableSignals.push("Mentions Kubernetes");
     // Lets e2e tests reach feature 004's gap-analysis error path through
     // the real UI (paste a JD containing this phrase) rather than a
     // sessionStorage hack — see devFakeGapAnalysis below.
-    if (lower.includes("trigger_gap_fake_error")) notableSignals.push("GAP_TRIGGER");
+    if (lowerAll.includes("trigger_gap_fake_error")) notableSignals.push("GAP_TRIGGER");
     return { ok: true, data: { ...JD_DEV_FIXTURE, notableSignals } };
   }
 

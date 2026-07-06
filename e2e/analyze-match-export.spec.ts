@@ -8,9 +8,7 @@ async function completeFullFlow(
   await page.goto("/analyze/upload");
   await page.getByLabel("Paste resume text").fill(resumeText);
   await page.getByRole("button", { name: /continue/i }).click();
-  await expect(page).toHaveURL("/analyze/job");
-
-  await page.goto("/analyze/report");
+  await expect(page).toHaveURL("/analyze/report");
   await expect(page.getByText("ATS / formatting checks")).toBeVisible();
 
   await page.goto("/analyze/job");

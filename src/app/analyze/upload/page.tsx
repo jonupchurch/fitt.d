@@ -57,7 +57,10 @@ export default function UploadPage() {
 
     setResume(result.data);
     setIsEditing(false);
-    router.push("/analyze/job");
+    // Lands on the analysis screen, not Job desc. — resume analysis
+    // must resolve before progressing further (spec.md FR-011, amended;
+    // see ADR-0009).
+    router.push("/analyze/report");
   }
 
   function startEditing() {

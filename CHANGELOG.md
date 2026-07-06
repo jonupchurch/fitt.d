@@ -564,3 +564,40 @@ tested, and live.
   route had no landmark region (a bare `<div>` instead of `<main>`),
   unlike every other route in the app — axe's `region` rule caught it
   immediately once `/share` was added to the a11y test suite.
+
+## 2026-07-06 — Post-MVP UX triage: hard-gate resume analysis, clearer status/CTA
+
+Two items pulled forward from `docs/future-work.md` after a UX review
+of the completed MVP, rather than left for later.
+
+- **Spec amendment, not a silent behavior change**: uploading a resume
+  used to redirect straight to `/analyze/job` without ever triggering
+  its analysis, which only ran if the candidate happened to visit
+  `/analyze/report` — a candidate could reach Match with
+  `ResumeAnalysis` still missing and only discover the wait there.
+  `specs/003-resume-analysis/spec.md` FR-011 originally required the
+  *opposite* of the fix being made (analysis MUST NOT block
+  progression), so reversing it is documented as an explicit amendment
+  (inline in `spec.md`/`quickstart.md`) plus
+  `docs/adr/0009-block-navigation-until-resume-analysis-completes.md`,
+  per Constitution Principle I.
+- The wizard now hard-gates: `upload/page.tsx` and `try-sample-button.tsx`
+  land the candidate on `/analyze/report` directly, the progress bar's
+  "Job desc."/"fitt.d" steps render inert while analysis is pending
+  (`wizard-progress.tsx`), and a new `resume-analysis-gate.tsx` bounces
+  any direct navigation (typed URL, back/forward) to `/analyze/job` or
+  `/analyze/match` back to the analysis screen. The gate lifts on
+  either success or failure — a transient model error no longer
+  strands the candidate, and `/analyze/report` now shows a "Continue to
+  job description" link in its error state.
+- Progress-bar clarity: steps renamed "Analysis" → "Resume analyzed"
+  and "Match" → "fitt.d", with "Resume analyzed" now tied to the
+  analysis actually resolving instead of just a resume existing. The
+  job-description "ready" screen's stale copy ("Analysis and matching
+  land in the next features...", a leftover from before those features
+  existed) is replaced with accurate copy plus an explicit "Next: see
+  your fitt.d match →" CTA.
+- `fake-provider.ts` gained a `TRIGGER_SLOW_ANALYSIS` magic phrase
+  (mirroring the existing `trigger_fake_error` one) so e2e tests can
+  deterministically observe the gate's pending window instead of
+  racing an otherwise near-instant fake resolution.

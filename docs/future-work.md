@@ -9,6 +9,47 @@ the spot — this is the list to work from once the core MVP (features
 Each entry: what it is, which feature it came up during, and why it
 was deferred rather than folded in.
 
+## ~~Block progression until resume analysis finishes~~ — Resolved 2026-07-06
+
+Surfaced during: post-MVP dogfooding of the full flow (all of
+000–005 live), 2026-07-06.
+
+Uploading a resume kicked off its analysis (feature 003) in the
+background, but the wizard let the candidate move straight on to the
+job-description step before that analysis had finished, surfacing the
+wait later at the match screen instead of up front.
+
+What shipped: `specs/003-resume-analysis/spec.md` FR-011 was amended
+(see `docs/adr/0009-block-navigation-until-resume-analysis-completes.md`)
+to hard-gate navigation — uploading now lands on `/analyze/report`
+directly, and the "Job desc."/"fitt.d" progress-bar steps and direct
+navigation to `/analyze/job` or `/analyze/match` are blocked (bounced
+back to the analysis screen) until the analysis resolves, success or
+failure. A failed analysis now shows its own "Continue to job
+description" CTA so it isn't a dead end.
+
+## ~~Clearer analysis-status signal + next-step CTA after JD input~~ — Resolved 2026-07-06
+
+Surfaced during: post-MVP dogfooding of the full flow (all of
+000–005 live), 2026-07-06.
+
+After a candidate saved their job description, the "Job description
+ready" screen (`src/app/analyze/job/page.tsx`) confirmed the JD was
+captured but didn't make clear it was actually *analyzed*, or what to
+do next; the progress bar's "Match" step also showed done as soon as
+both analyses existed, not once the fit was actually viewed.
+
+What shipped: the wizard progress bar's steps were renamed to
+"Resume analyzed" and "fitt.d" (from "Analysis"/"Match"), with "Resume
+analyzed" now tied to the analysis actually resolving rather than just
+a resume existing. The JD "ready" screen's stale copy ("Analysis and
+matching land in the next features...") was replaced with accurate
+copy plus an explicit "Next: see your fitt.d match →" CTA. "fitt.d"'s
+checkmark still means "ready to view," not "already viewed" — a true
+"fit actually computed" signal would need `GapAnalysis` persisted to
+wizard state, which wasn't in scope here; noted as a possible future
+follow-up if it comes up again.
+
 ## ~~Edit/replace resume and job description mid-flow~~ — Resolved 2026-07-05
 
 Surfaced during: feature 001 (Resume & JD Input), post-implementation.

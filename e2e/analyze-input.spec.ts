@@ -39,7 +39,7 @@ test.describe("resume input", () => {
       buffer: buildMinimalPdf("Jane Doe Software Engineer"),
     });
     await page.getByRole("button", { name: /continue/i }).click();
-    await expect(page).toHaveURL("/analyze/job");
+    await expect(page).toHaveURL("/analyze/report");
   });
 
   test("uploading a valid .txt resume reaches a ready state", async ({
@@ -54,7 +54,7 @@ test.describe("resume input", () => {
       ),
     });
     await page.getByRole("button", { name: /continue/i }).click();
-    await expect(page).toHaveURL("/analyze/job");
+    await expect(page).toHaveURL("/analyze/report");
   });
 
   test("pasting resume text reaches a ready state", async ({ page }) => {
@@ -63,7 +63,7 @@ test.describe("resume input", () => {
       .getByLabel("Paste resume text")
       .fill("Jane Doe\nSoftware Engineer with 5 years of experience.");
     await page.getByRole("button", { name: /continue/i }).click();
-    await expect(page).toHaveURL("/analyze/job");
+    await expect(page).toHaveURL("/analyze/report");
   });
 
   test("rejects an unsupported file type with a clear error", async ({
@@ -240,7 +240,7 @@ test.describe("editing and replacing after the fact", () => {
       .getByLabel("Paste resume text")
       .fill("Jane Doe\nOriginal resume text.");
     await page.getByRole("button", { name: /continue/i }).click();
-    await expect(page).toHaveURL("/analyze/job");
+    await expect(page).toHaveURL("/analyze/report");
 
     await page.goto("/analyze/upload");
     await expect(
@@ -252,7 +252,7 @@ test.describe("editing and replacing after the fact", () => {
       .getByLabel("Paste resume text")
       .fill("Jane Doe\nA completely different resume.");
     await page.getByRole("button", { name: /continue/i }).click();
-    await expect(page).toHaveURL("/analyze/job");
+    await expect(page).toHaveURL("/analyze/report");
   });
 });
 
@@ -275,7 +275,12 @@ test.describe("try a sample", () => {
   }) => {
     await page.goto("/");
     await page.getByRole("button", { name: /try a sample/i }).click();
-    await expect(page).toHaveURL("/analyze/job");
+    // Lands on the analysis screen, same as a manual upload — the
+    // sample resume still needs its own analysis run (ADR-0009).
+    await expect(page).toHaveURL("/analyze/report");
+    await expect(page.getByText("ATS / formatting checks")).toBeVisible();
+
+    await page.goto("/analyze/job");
     await expect(
       page.getByRole("heading", { name: "Job description ready" }),
     ).toBeVisible();

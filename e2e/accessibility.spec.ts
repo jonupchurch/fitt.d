@@ -43,9 +43,7 @@ test("/analyze/report's populated results (including an expanded accordion row) 
     .getByLabel("Paste resume text")
     .fill("Jane Doe\nSenior Frontend Engineer with 5 years of experience.");
   await page.getByRole("button", { name: /continue/i }).click();
-  await expect(page).toHaveURL("/analyze/job");
-
-  await page.goto("/analyze/report");
+  await expect(page).toHaveURL("/analyze/report");
   await expect(
     page.getByText("ATS / formatting checks"),
   ).toBeVisible();
@@ -64,9 +62,7 @@ test("/analyze/report's error state has no automatically detectable accessibilit
     .getByLabel("Paste resume text")
     .fill("TRIGGER_FAKE_ERROR — force the fake provider to fail.");
   await page.getByRole("button", { name: /continue/i }).click();
-  await expect(page).toHaveURL("/analyze/job");
-
-  await page.goto("/analyze/report");
+  await expect(page).toHaveURL("/analyze/report");
   await expect(
     page.getByText(/couldn't analyze this resume/i),
   ).toBeVisible();
@@ -83,9 +79,7 @@ test("/analyze/match's populated results (including an applied bullet) have no a
     .getByLabel("Paste resume text")
     .fill("Jane Doe\nSenior Frontend Engineer with 5 years of experience.");
   await page.getByRole("button", { name: /continue/i }).click();
-  await expect(page).toHaveURL("/analyze/job");
-
-  await page.goto("/analyze/report");
+  await expect(page).toHaveURL("/analyze/report");
   await expect(page.getByText("ATS / formatting checks")).toBeVisible();
 
   await page.goto("/analyze/job");
@@ -127,9 +121,7 @@ test("/analyze/match's error state has no automatically detectable accessibility
   await page.goto("/analyze/upload");
   await page.getByLabel("Paste resume text").fill("Jane Doe\nEngineer.");
   await page.getByRole("button", { name: /continue/i }).click();
-  await expect(page).toHaveURL("/analyze/job");
-
-  await page.goto("/analyze/report");
+  await expect(page).toHaveURL("/analyze/report");
   await expect(page.getByText("ATS / formatting checks")).toBeVisible();
 
   await page.goto("/analyze/job");

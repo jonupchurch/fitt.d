@@ -239,7 +239,7 @@ function RewriteSuggestions({
 }
 
 export default function ReportPage() {
-  const { resume, setResumeAnalysis } = useWizard();
+  const { resume, setResumeAnalysis, setResumeAnalysisFailed } = useWizard();
   const [analysis, setAnalysis] = useState<ResumeAnalysis | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -256,6 +256,10 @@ export default function ReportPage() {
         if (cancelled) return;
         if (!result.ok) {
           setError(result.error.message);
+          // Unblocks the wizard-wide navigation gate (see
+          // resume-analysis-gate.tsx) — a failed analysis must not be a
+          // permanent dead end.
+          setResumeAnalysisFailed(true);
           return;
         }
         setAnalysis(result.data);
@@ -269,7 +273,7 @@ export default function ReportPage() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [resume, setResumeAnalysis]);
+  }, [resume, setResumeAnalysis, setResumeAnalysisFailed]);
 
   const isLoading = resume !== null && analysis === null && error === null;
   const loadingMessage = useLoadingMessage(isLoading);
@@ -335,9 +339,19 @@ export default function ReportPage() {
       ) : null}
 
       {error ? (
-        <p role="alert" className="text-sm font-medium text-danger-strong">
-          {error}
-        </p>
+        <>
+          <p role="alert" className="text-sm font-medium text-danger-strong">
+            {error}
+          </p>
+          <div className="flex justify-end pt-2">
+            <Link
+              href="/analyze/job"
+              className="rounded-full bg-brand-strong px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
+            >
+              Continue to job description →
+            </Link>
+          </div>
+        </>
       ) : null}
 
       {analysis ? (

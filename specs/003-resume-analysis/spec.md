@@ -62,7 +62,7 @@ As a candidate, I want a few concrete before/after rewrite suggestions for weak 
 - What happens when the model call fails or returns output that doesn't match the expected structure? Same as feature 002: one bounded repair retry, then a clear, non-blocking degraded message — no crash, no silent fabrication.
 - What happens when the candidate triggers analysis requests faster than the configured rate limit? Same shared limit and clear message as feature 002 (`docs/non-functional.md`).
 - What happens when the resume text is very short or sparse (e.g., a one-page stub with only contact info)? The system MUST still return a result — likely a low score and mostly "not found"/"needs-work" statuses — rather than treating it as an error.
-- What happens if the candidate proceeds to paste a job description before resume analysis finishes? The system MUST NOT block that progression; this feature's scope ends at producing `ResumeAnalysis` when ready, not at gating navigation.
+- What happens if the candidate attempts to proceed to the job-description step (or Match) before resume analysis has resolved? **Amended 2026-07-06 — see ADR-0009.** The system MUST block that progression — the candidate is kept on (or redirected back to) the resume-analysis screen, including on direct navigation, until the analysis resolves (succeeds or fails). Once it resolves, navigation is unblocked even on failure, so a model error is not a permanent dead end.
 
 ## Requirements *(mandatory)*
 
@@ -78,7 +78,7 @@ As a candidate, I want a few concrete before/after rewrite suggestions for weak 
 - **FR-008**: System MUST NOT fabricate a rewrite suggestion, a strength, or a weakness that isn't supported by the actual resume content.
 - **FR-009**: The analysis call MUST run entirely server-side, reusing the same provider abstraction, Zod-validated output, one-bounded-retry repair, and rate-limit enforcement established in feature 002 — this feature does not redefine that infrastructure.
 - **FR-010**: The system MUST NOT persist the resume text or its analysis output beyond the active session.
-- **FR-011**: The candidate MUST be able to proceed to the job-description step whether or not resume analysis has finished; this feature MUST NOT block progression.
+- **FR-011**: **Amended 2026-07-06 — see ADR-0009.** The system MUST block the candidate from reaching the job-description step or Match while resume analysis has neither succeeded nor failed yet, redirecting back to the resume-analysis screen on any attempt (progress-bar link, direct URL, back/forward navigation). The system MUST unblock progression once the analysis resolves, whether it succeeds or fails.
 
 ### Key Entities
 

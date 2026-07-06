@@ -3,7 +3,9 @@
 import {
   createContext,
   useContext,
+  useEffect,
   useMemo,
+  useState,
   useSyncExternalStore,
   type ReactNode,
 } from "react";
@@ -40,10 +42,12 @@ type WizardContextValue = {
   jobDescription: JobDescription | null;
   jdAnalysis: JDAnalysis | null;
   resumeAnalysis: ResumeAnalysis | null;
+  resumeAnalysisFailed: boolean;
   setResume: (resume: Resume) => void;
   setJobDescription: (jobDescription: JobDescription) => void;
   setJdAnalysis: (analysis: JDAnalysis) => void;
   setResumeAnalysis: (analysis: ResumeAnalysis) => void;
+  setResumeAnalysisFailed: (failed: boolean) => void;
   resetForNewJob: () => void;
 };
 
@@ -89,19 +93,37 @@ export function WizardProvider({ children }: { children: ReactNode }) {
     [resumeAnalysisRaw],
   );
 
+  // Transient (not sessionStorage-backed) — only tracks whether the
+  // *current* resume's analysis attempt has failed, so the navigation
+  // gate (resume-analysis-gate.tsx) knows to unblock even without a
+  // successful ResumeAnalysis. Reset whenever the underlying resume
+  // changes, mirroring wizard-state.ts's own invalidation of
+  // RESUME_ANALYSIS_KEY on new resume content.
+  const [resumeAnalysisFailed, setResumeAnalysisFailed] = useState(false);
+  useEffect(() => {
+    // setState deferred to a same-tick timeout, not called synchronously
+    // in the effect body, to avoid the react-hooks/set-state-in-effect
+    // render-cascade lint error — same pattern used by the report page's
+    // and job page's analysis effects.
+    const timer = setTimeout(() => setResumeAnalysisFailed(false), 0);
+    return () => clearTimeout(timer);
+  }, [resumeRaw]);
+
   const value = useMemo<WizardContextValue>(
     () => ({
       resume,
       jobDescription,
       jdAnalysis,
       resumeAnalysis,
+      resumeAnalysisFailed,
       setResume: setStoredResume,
       setJobDescription: setStoredJobDescription,
       setJdAnalysis: setStoredJdAnalysis,
       setResumeAnalysis: setStoredResumeAnalysis,
+      setResumeAnalysisFailed,
       resetForNewJob,
     }),
-    [resume, jobDescription, jdAnalysis, resumeAnalysis],
+    [resume, jobDescription, jdAnalysis, resumeAnalysis, resumeAnalysisFailed],
   );
 
   return (

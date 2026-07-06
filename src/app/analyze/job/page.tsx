@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { JobIcon } from "@/components/icons";
 import { createLatestOnly } from "@/lib/llm/latest-only";
@@ -153,18 +154,25 @@ export default function JobDescriptionPage() {
         </h1>
         <p className="max-w-md text-sm text-n-600">
           {jobDescription.title ? `"${jobDescription.title}"` : "This job"}
-          {jobDescription.company ? ` at ${jobDescription.company}` : ""} is
-          saved for this session. Analysis and matching land in the next
-          features — for now, both your resume and job description are
-          captured and ready.
+          {jobDescription.company ? ` at ${jobDescription.company}` : ""} has
+          been analyzed — its required skills, keywords, and seniority are
+          ready. Head to fitt.d to see how your resume matches up.
         </p>
-        <button
-          type="button"
-          onClick={startEditing}
-          className="rounded-full border border-brand px-5 py-2 text-sm font-semibold text-brand-strong transition-colors hover:bg-cyan-50"
-        >
-          Change job description
-        </button>
+        <div className="flex flex-wrap justify-center gap-3">
+          <button
+            type="button"
+            onClick={startEditing}
+            className="rounded-full border border-brand px-5 py-2 text-sm font-semibold text-brand-strong transition-colors hover:bg-cyan-50"
+          >
+            Change job description
+          </button>
+          <Link
+            href="/analyze/match"
+            className="rounded-full bg-brand-strong px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
+          >
+            Next: see your fitt.d match →
+          </Link>
+        </div>
       </div>
     );
   }
