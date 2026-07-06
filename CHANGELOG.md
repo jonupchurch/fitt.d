@@ -710,3 +710,16 @@ Two more instances of the pattern just fixed on the Match page:
   (`wizard-status-panel.spec.ts`'s one-shot `textContent()` reads could
   occasionally race a fresh full-page navigation's client-side
   hydration correction) by switching to `expect.poll()`.
+
+## 2026-07-06 — chore: switch default model to Claude Haiku 4.5
+
+`FITTD_MODEL` (and `provider.ts`'s code-level fallback) changed from
+`anthropic/claude-sonnet-5` to `anthropic/claude-haiku-4.5` — per live
+Gateway pricing, exactly half the cost on both input and output
+($1/$5 per M tokens vs. $2/$10), and Anthropic positions it as
+matching Sonnet 4-level quality on coding/agent/reasoning tasks. A
+config-only change per Constitution Principle II's swappable-provider
+design — no code change beyond the two defaults. Historical ADR-0002
+and prior CHANGELOG entries are left describing `claude-sonnet-5`
+as-is; they're a record of what was decided at the time, not a live
+reference.

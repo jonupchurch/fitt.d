@@ -1,7 +1,7 @@
 import { NoObjectGeneratedError, Output, generateText } from "ai";
 import type { z } from "zod";
 
-const DEFAULT_MODEL = "anthropic/claude-sonnet-5";
+const DEFAULT_MODEL = "anthropic/claude-haiku-4.5";
 
 /** Exported so tailor-resume.ts's streamed call can share the same
  * model resolution instead of duplicating it. */
