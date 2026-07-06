@@ -62,7 +62,7 @@ description: "Task list for feature 000 - Project Setup (session 0)"
 - [X] T013 [US1] Add `test`, `test:e2e`, and `eval` scripts to `package.json` (depends on: T010, T011, T012)
 - [X] T014 [US1] Add an automated accessibility check (axe) against the placeholder home route, runnable as its own script (depends on: T009, T011)
 - [X] T015 [US1] Create `.github/workflows/ci.yml` running typecheck, lint, unit test, eval, and the accessibility check on every push, failing the build on any failure (depends on: T004, T013, T014)
-- [ ] T016 [US1] Connect the repository to Vercel and confirm a push to `main` produces a live deployment at a public URL — **manual step**: requires the repo owner (Jon) to complete the one-time GitHub↔Vercel account link via the Vercel dashboard or CLI login; not executable by an agent without account credentials (depends on: T001–T009 pushed to `main`). **STATUS: not done — awaiting Jon.**
+- [X] T016 [US1] Connect the repository to Vercel and confirm a push to `main` produces a live deployment at a public URL — **manual step**: requires the repo owner (Jon) to complete the one-time GitHub↔Vercel account link via the Vercel dashboard or CLI login; not executable by an agent without account credentials (depends on: T001–T009 pushed to `main`). **STATUS: done — live at https://fittdprod.vercel.app/.**
 
 **Checkpoint**: User Story 1 is fully functional — every Success Criterion in spec.md is verifiable, with zero product features implemented.
 

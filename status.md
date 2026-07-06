@@ -25,7 +25,7 @@
 
 **Why it mattered to do first:** so that every feature after this one is built on infrastructure that's already proven to work, instead of discovering basic problems (broken deploys, missing accessibility checks, etc.) partway through building the real product.
 
-**What exists today:** a branded placeholder home page, and a fully automated pipeline behind the scenes (every change is tested and deployed automatically).
+**What exists today:** a fully automated pipeline behind the scenes (every change is tested and deployed automatically) — the home page itself gained real entry points (upload/paste, a one-click sample demo) once feature 001 shipped.
 
 ---
 

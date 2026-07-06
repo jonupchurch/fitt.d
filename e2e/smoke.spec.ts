@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("placeholder home route loads and renders the Fitt.d identity", async ({
+test("home route loads and renders the Fitt.d identity", async ({
   page,
 }) => {
   await page.goto("/");

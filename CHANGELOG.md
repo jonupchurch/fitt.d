@@ -769,3 +769,52 @@ full spec → plan → tasks → implement pipeline in one sitting.
   UI) reads from.
 - `e2e/site-chrome.spec.ts`'s sitewide-footer test updated to check
   both lines independently instead of one combined regex.
+
+## 2026-07-06 — Docs: README.md and status.md said the product was still "planned"
+
+Two AI reviewers given the repo cold both concluded the product was
+fully specified but never built — because `README.md` and `status.md`
+were written at session 0, before any feature existed, and never
+updated: they still said features 001-005 were "fully specified,
+planned, and tasked, not yet implemented" and "📋 Planned" for every
+row of their status tables, even though all of 000-008 have been live
+for the entire back half of this session.
+
+- `README.md`'s "Project status" section now states plainly that the
+  full product (000-008) is built, tested, and live; the live-URL
+  caveat and the "ADRs land once implementation starts" line are gone
+  now that ten real ADRs exist.
+- `status.md`'s every MVP feature flips from 📋 Planned to ✅ Shipped,
+  tense corrected throughout ("What we built" / "What you can do
+  now"), plus a new Post-MVP section covering features 006-008, which
+  weren't mentioned in this doc at all before.
+- `docs/adr/README.md`'s index table was itself missing rows for
+  ADR-0009 and ADR-0010, which existed as files but were never added
+  to the table — fixed alongside the rest.
+
+## 2026-07-06 — Docs: a few more stale artifacts from the same sweep
+
+A follow-up pass over the rest of the repo (specs/, docs/, e2e/ test
+names) for the same kind of drift as above, checking each candidate
+against the actual shipped code before touching it:
+
+- `specs/000-project-setup/tasks.md`'s T016 (connect the repo to
+  Vercel) was still unchecked with a "STATUS: not done — awaiting
+  Jon" note, even though the site has been live at
+  `fittdprod.vercel.app` since early in this session. Checked, status
+  note updated.
+- `status.md`'s feature-000 section described the home page as still
+  "a branded placeholder" — true at session 0, but feature 001 gave it
+  real entry points (upload/paste, a one-click sample demo) long ago.
+  Reworded.
+- `e2e/smoke.spec.ts`'s test name still said "placeholder home route"
+  for the same reason — renamed; the assertions themselves were
+  already correct.
+- Confirmed and deliberately left alone: `docs/adr/0002-model-provider-abstraction.md`'s
+  reference to `claude-sonnet-5` — that ADR is a historical record of
+  what was decided at the time, not a live reference (CHANGELOG's
+  Haiku-swap entry already says as much); `Resources/`'s pre-project
+  draft material — explicitly sanctioned by the Constitution's
+  Governance section as retained prior art, never meant to match the
+  real repo.
+
