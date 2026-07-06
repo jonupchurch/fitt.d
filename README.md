@@ -2,9 +2,9 @@
 
 **Paste a resume and a job description. See exactly how well you fit — and get the rewrites to close the gap.**
 
-🔗 **Live:** https://fittdprod.vercel.app/ (currently the session-0 placeholder — the real product ships as features 001–005 are implemented) · 📋 **[Plan review](status.md)** · 📐 **[Specs](specs/)**
+🔗 **Live:** https://fittdprod.vercel.app/ · 📋 **[Status](status.md)** · 📐 **[Specs](specs/)** · 📝 **[Changelog](CHANGELOG.md)**
 
-> Built as a portfolio project to demonstrate spec-driven architecture, full-stack Next.js/TypeScript with a real AI pipeline, and product judgment. The repo is meant to be *read*, not just run — the constitution, specs, plans, and (once implementation starts) ADRs are as much the deliverable as the running app.
+> Built as a portfolio project to demonstrate spec-driven architecture, full-stack Next.js/TypeScript with a real AI pipeline, and product judgment. The repo is meant to be *read*, not just run — the constitution, specs, plans, and ADRs are as much the deliverable as the running app.
 
 ---
 
@@ -22,8 +22,23 @@ Applicants guess at whether they're a fit for a role and rewrite their resume bl
 
 ## Project status
 
-- **Feature 000 (project foundation)** — done and live: Next.js app, branded placeholder, full test/CI/deploy pipeline.
-- **Features 001–005 (the product above)** — fully specified, planned, and tasked, not yet implemented. See [`status.md`](status.md) for a plain-language walkthrough of each, or [`specs/`](specs/) for the full spec/plan/tasks behind them.
+**The full product is built, tested, and live** — every step in "How it
+works" above is real and running at the URL up top, not a mockup.
+
+- **Features 000–005 (the MVP)** — implemented: input, JD analysis,
+  resume analysis, match & tailoring, comparison & export. See
+  [`status.md`](status.md) for a plain-language walkthrough of each, or
+  [`specs/`](specs/) for the full spec/plan/tasks behind them.
+- **Features 006–008 (post-MVP polish)** — also implemented: sitewide
+  header/footer/About page, a persistent wizard status panel with a
+  reset control, and a personal bio/journey page at
+  [`/about`](https://fittdprod.vercel.app/about). See
+  [`CHANGELOG.md`](CHANGELOG.md) for the full history, including a
+  round of dogfooding that found and fixed three real bugs.
+
+Every feature — MVP and post-MVP alike — went through the same
+spec → plan → tasks → implement pipeline; `specs/` and `docs/adr/` are
+the record of that for all eight.
 
 ## Tech stack
 
@@ -49,7 +64,7 @@ GitHub Actions (`.github/workflows/ci.yml`) runs typecheck, lint, unit tests, ev
 
 ## Architecture decisions
 
-Every non-trivial tradeoff gets a short ADR in [`docs/adr/`](docs/adr) — captured before or alongside the code that implements it, not after the fact. That directory is currently just the index and template; real entries land as each feature is implemented (the reasoning already locked in during planning lives in each feature's `specs/00X-*/research.md` in the meantime).
+Every non-trivial tradeoff gets a short ADR in [`docs/adr/`](docs/adr) — captured before or alongside the code that implements it, not after the fact. Ten are accepted so far, covering everything from input validation and the model-provider abstraction to navigation gating and cache invalidation — see the index at [`docs/adr/README.md`](docs/adr/README.md).
 
 ## Privacy
 

@@ -18,5 +18,7 @@ Format: lightweight [MADR](https://adr.github.io/madr/). Status is one of
 | [0006](0006-tailoring-output-streaming-validation.md) | Schema-validated streaming for tailoring output via a Route Handler + `useObject` (feature 004) | Accepted |
 | [0007](0007-report-export-approach.md) | Print-stylesheet PDF and client-side `.docx` generation (feature 005) | Accepted |
 | [0008](0008-shareable-link-without-persistence.md) | Shareable report link as a URL-encoded trimmed summary, no server-side storage (feature 005) | Accepted |
+| [0009](0009-block-navigation-until-resume-analysis-completes.md) | Hard-gate wizard navigation until resume analysis resolves (post-MVP UX fix) | Accepted |
+| [0010](0010-persist-gap-analysis-with-write-time-invalidation.md) | Persist gap analysis and tailoring output with write-time invalidation (post-MVP caching fix) | Accepted |
 
 New decision? Copy `0000-template.md`.
