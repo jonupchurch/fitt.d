@@ -1,0 +1,4 @@
+{
+  "requiredSkillsMustInclude": ["react", "typescript"],
+  "fitScoreRange": [30, 95]
+}

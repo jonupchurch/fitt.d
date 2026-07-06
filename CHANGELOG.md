@@ -843,3 +843,35 @@ session 0, never revisited once the real pipeline existed. See
   `docs/future-work.md` as an explicitly deferred item — a single
   synthetic run's token count wouldn't be an honest "measured" figure.
 
+## 2026-07-06 — feat: the eval harness does real work now (Constitution Principle V)
+
+`evals/run-evals.ts`/`scorers.ts` were stubbed at session 0 with a
+"wire this up once features 004/005 exist" TODO. Those features
+shipped weeks ago; the stub was never revisited — `SCORERS` was a
+literal empty array, and CI's `npm run eval` step had been silently
+no-op'ing (0 scorable fixtures, since no fixture had ever gotten an
+`expected.json`) the entire time, despite the Constitution's Principle
+V MUST. See [ADR-0012](docs/adr/0012-eval-harness-scoring-and-modes.md).
+
+- New `evals/pipeline.ts` chains the four real analysis functions
+  (`analyzeJobDescription` → `analyzeResume` → `analyzeGap` →
+  `tailorResumeResponse`) exactly as the app's own Server Actions and
+  Route Handler call them — not a parallel reimplementation.
+- `evals/scorers.ts` now implements all four named criteria: schema
+  validity (binary — did every stage complete), required-skill recall,
+  no-hallucinated-matches (every "matched" skill must be grounded in
+  the resume's own analysis), and score plausibility (fit score inside
+  an expected range).
+- `evals/fixtures/sample-1/expected.json` is new — deliberately loose
+  ground truth (`requiredSkillsMustInclude`, `fitScoreRange`) so the
+  same assertions hold for both modes described below.
+- `npm run eval` (CI's default) forces the deterministic fake provider
+  regardless of the caller's shell/`.env`, so it stays free and
+  network-free; `npm run eval -- --live` clears that and calls the
+  real Gateway for validating prompt changes before a release, exactly
+  as the original (never-implemented) docstring promised — not run in
+  CI.
+- Verified the gate actually fails: temporarily corrupted
+  `expected.json` with an impossible required skill and a fit-score
+  range the real fixture couldn't hit, confirmed `EVAL FAILED` with the
+  specific failing criteria printed, then restored it.

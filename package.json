@@ -1,6 +1,6 @@
 {
   "name": "fitt.d",
-  "version": "0.99.1",
+  "version": "0.99.2",
   "private": true,
   "engines": {
     "node": ">=22.18.0"
