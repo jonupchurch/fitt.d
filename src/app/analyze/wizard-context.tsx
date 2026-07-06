@@ -11,18 +11,21 @@ import {
 } from "react";
 import type { JobDescription, Resume } from "@/lib/input/schemas";
 import {
+  clearWizardState,
+  getGapAnalysisRaw,
   getJdAnalysisRaw,
   getJobDescriptionRaw,
   getResumeAnalysisRaw,
   getResumeRaw,
   resetForNewJob,
+  setStoredGapAnalysis,
   setStoredJdAnalysis,
   setStoredJobDescription,
   setStoredResume,
   setStoredResumeAnalysis,
   subscribeToWizardState,
 } from "@/lib/input/wizard-state";
-import type { JDAnalysis, ResumeAnalysis } from "@/lib/llm/schemas";
+import type { GapAnalysis, JDAnalysis, ResumeAnalysis } from "@/lib/llm/schemas";
 
 function parseJson<T>(raw: string | null): T | null {
   if (!raw) return null;
@@ -43,12 +46,18 @@ type WizardContextValue = {
   jdAnalysis: JDAnalysis | null;
   resumeAnalysis: ResumeAnalysis | null;
   resumeAnalysisFailed: boolean;
+  gapAnalysis: GapAnalysis | null;
   setResume: (resume: Resume) => void;
   setJobDescription: (jobDescription: JobDescription) => void;
   setJdAnalysis: (analysis: JDAnalysis) => void;
   setResumeAnalysis: (analysis: ResumeAnalysis) => void;
   setResumeAnalysisFailed: (failed: boolean) => void;
+  setGapAnalysis: (analysis: GapAnalysis) => void;
   resetForNewJob: () => void;
+  /** Full session reset (feature 007) — clears every wizard-state key.
+   * Callers are responsible for navigating afterward (mirrors
+   * resetForNewJob, which doesn't navigate either). */
+  resetWizard: () => void;
 };
 
 const WizardContext = createContext<WizardContextValue | null>(null);
@@ -78,6 +87,11 @@ export function WizardProvider({ children }: { children: ReactNode }) {
     getResumeAnalysisRaw,
     getServerSnapshot,
   );
+  const gapAnalysisRaw = useSyncExternalStore(
+    subscribeToWizardState,
+    getGapAnalysisRaw,
+    getServerSnapshot,
+  );
 
   const resume = useMemo(() => parseJson<Resume>(resumeRaw), [resumeRaw]);
   const jobDescription = useMemo(
@@ -91,6 +105,10 @@ export function WizardProvider({ children }: { children: ReactNode }) {
   const resumeAnalysis = useMemo(
     () => parseJson<ResumeAnalysis>(resumeAnalysisRaw),
     [resumeAnalysisRaw],
+  );
+  const gapAnalysis = useMemo(
+    () => parseJson<GapAnalysis>(gapAnalysisRaw),
+    [gapAnalysisRaw],
   );
 
   // Transient (not sessionStorage-backed) — only tracks whether the
@@ -116,14 +134,24 @@ export function WizardProvider({ children }: { children: ReactNode }) {
       jdAnalysis,
       resumeAnalysis,
       resumeAnalysisFailed,
+      gapAnalysis,
       setResume: setStoredResume,
       setJobDescription: setStoredJobDescription,
       setJdAnalysis: setStoredJdAnalysis,
       setResumeAnalysis: setStoredResumeAnalysis,
       setResumeAnalysisFailed,
+      setGapAnalysis: setStoredGapAnalysis,
       resetForNewJob,
+      resetWizard: clearWizardState,
     }),
-    [resume, jobDescription, jdAnalysis, resumeAnalysis, resumeAnalysisFailed],
+    [
+      resume,
+      jobDescription,
+      jdAnalysis,
+      resumeAnalysis,
+      resumeAnalysisFailed,
+      gapAnalysis,
+    ],
   );
 
   return (

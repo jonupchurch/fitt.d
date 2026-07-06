@@ -601,3 +601,49 @@ of the completed MVP, rather than left for later.
   (mirroring the existing `trigger_fake_error` one) so e2e tests can
   deterministically observe the gate's pending window instead of
   racing an otherwise near-instant fake resolution.
+
+## 2026-07-06 — Feature 006: Site Chrome (Header, Footer, About Page)
+
+First post-MVP features to go through the full Spec Kit pipeline
+(spec → plan → tasks → implement) rather than the lighter triage
+process above — genuinely new product surface, not a fix.
+
+- A sitewide header (`src/components/site-header.tsx`) now appears on
+  every route: the Fitt.d wordmark linking home, a single "Analyze" nav
+  item representing the whole four-route wizard as one active section
+  (`src/lib/nav/active-section.ts`, a pathname-prefix check, Vitest-covered),
+  and an "About" nav item. A sitewide footer
+  (`src/components/site-footer.tsx`) shows a copyright notice. Both are
+  composed once in the root `layout.tsx`, leaving `/analyze/layout.tsx`'s
+  own progress bar and navigation gate untouched underneath.
+- New `/about` page — content-only, on-brand placeholder copy (real
+  copy to follow later), zero interactive controls.
+- No ADR needed — pure presentation composition, not a data/validation/
+  streaming/auth/storage/error-handling decision (plan.md's Constitution
+  Check).
+
+## 2026-07-06 — Feature 007: Wizard Status Panel & Reset
+
+- A new sidebar panel (`src/app/analyze/wizard-status-panel.tsx`) on
+  all four wizard pages tracks four real checkpoints — Resume
+  Submitted, Resume Analyzed, JD Submitted, and fitt.d analysis —
+  distinct from (and coexisting with) the existing top progress bar,
+  which tracks navigation position rather than completion.
+- **A real architectural gap closed**: making "fitt.d analysis" mean
+  "the fit was actually computed," not just "both prerequisite
+  analyses are ready," required persisting `GapAnalysis` to wizard
+  state for the first time — it previously only ever lived in
+  `/analyze/match`'s local React state. `wizard-state.ts` gained a
+  `GAP_ANALYSIS_KEY` with write-time invalidation (cleared whenever a
+  new resume or JD analysis lands, or the resume itself changes) rather
+  than staleness-on-read fingerprinting — see
+  `docs/adr/0010-persist-gap-analysis-with-write-time-invalidation.md`.
+- The panel also adds a "Start over" action — `window.confirm()`-gated,
+  then a full `clearWizardState()` reset back to `/analyze/upload`.
+  `clearWizardState()` has existed since feature 001 but had no caller
+  until now. The reset works even while feature 003's navigation gate
+  (ADR-0009) is actively blocking forward navigation, since resetting
+  always clears the resume that gate depends on.
+- `/analyze/layout.tsx` widened to a two-column layout (main content +
+  status panel sidebar), stacking on narrow viewports — the existing
+  wizard progress bar renders unchanged inside the main column.

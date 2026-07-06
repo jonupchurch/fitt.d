@@ -477,8 +477,17 @@ function TailoringPanel({
 
 export default function MatchPage() {
   const router = useRouter();
-  const { resume, jobDescription, jdAnalysis, resumeAnalysis, resetForNewJob } =
-    useWizard();
+  const {
+    resume,
+    jobDescription,
+    jdAnalysis,
+    resumeAnalysis,
+    resetForNewJob,
+    // Aliased — this page already tracks its own gapAnalysis local
+    // state below; this setter is only used to persist a computed
+    // result to wizard state (feature 007's status-panel checkpoint).
+    setGapAnalysis: persistGapAnalysis,
+  } = useWizard();
 
   const [gapAnalysis, setGapAnalysis] = useState<GapAnalysis | null>(null);
   const [gapError, setGapError] = useState<string | null>(null);
@@ -561,6 +570,10 @@ export default function MatchPage() {
           return;
         }
         setGapAnalysis(result.data);
+        // Persisted so the wizard status panel's "fitt.d analysis"
+        // checkpoint (feature 007) reflects a genuinely computed fit,
+        // and stays accurate after navigating away and back.
+        persistGapAnalysis(result.data);
       });
     }, 0);
 
@@ -568,7 +581,7 @@ export default function MatchPage() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [jdAnalysis, resumeAnalysis]);
+  }, [jdAnalysis, resumeAnalysis, persistGapAnalysis]);
 
   useEffect(() => {
     if (!resumeAnalysis) return;

@@ -1,10 +1,11 @@
-import type { JDAnalysis, ResumeAnalysis } from "@/lib/llm/schemas";
+import type { GapAnalysis, JDAnalysis, ResumeAnalysis } from "@/lib/llm/schemas";
 import type { JobDescription, Resume } from "./schemas";
 
 const RESUME_KEY = "fittd.resume";
 const JOB_DESCRIPTION_KEY = "fittd.jobDescription";
 const JD_ANALYSIS_KEY = "fittd.jdAnalysis";
 const RESUME_ANALYSIS_KEY = "fittd.resumeAnalysis";
+const GAP_ANALYSIS_KEY = "fittd.gapAnalysis";
 
 const listeners = new Set<() => void>();
 
@@ -61,6 +62,11 @@ export function setStoredResume(resume: Resume): void {
   // saving the same resume again shouldn't discard a valid analysis.
   if (previous?.rawText !== resume.rawText) {
     removeKey(RESUME_ANALYSIS_KEY);
+    // A stale fit result must go with it immediately — otherwise
+    // there's a window, between replacing the resume and its new
+    // analysis resolving, where GapAnalysis would still read "done"
+    // for a resume that no longer exists (ADR-0010).
+    removeKey(GAP_ANALYSIS_KEY);
   }
 }
 
@@ -101,6 +107,12 @@ export function getStoredJdAnalysis(): JDAnalysis | null {
  * state and were lost on navigation. */
 export function setStoredJdAnalysis(analysis: JDAnalysis): void {
   writeJson(JD_ANALYSIS_KEY, analysis);
+  // A new JD analysis invalidates any fit computed against the old one
+  // (ADR-0010). Unconditional — this only ever fires when the live
+  // preview actually recomputes, which requires the JD textarea to be
+  // actively edited again, not from merely revisiting the saved
+  // "ready" screen.
+  removeKey(GAP_ANALYSIS_KEY);
 }
 
 export function getResumeAnalysisRaw(): string | null {
@@ -115,15 +127,38 @@ export function getStoredResumeAnalysis(): ResumeAnalysis | null {
  * setStoredJdAnalysis. */
 export function setStoredResumeAnalysis(analysis: ResumeAnalysis): void {
   writeJson(RESUME_ANALYSIS_KEY, analysis);
+  // See setStoredJdAnalysis — a new resume analysis invalidates any
+  // fit computed against the old one (ADR-0010).
+  removeKey(GAP_ANALYSIS_KEY);
 }
 
-/** Clears all wizard state. Not used by any feature — kept for
- * completeness alongside the more targeted `resetForNewJob` below. */
+export function getGapAnalysisRaw(): string | null {
+  return readRaw(GAP_ANALYSIS_KEY);
+}
+
+export function getStoredGapAnalysis(): GapAnalysis | null {
+  return parseJson<GapAnalysis>(getGapAnalysisRaw());
+}
+
+/** Called once analyzeGap (feature 004) succeeds, so the wizard status
+ * panel's "fitt.d analysis" checkpoint (feature 007) reflects a fit
+ * that's actually been computed, not just eligible to compute — and so
+ * it survives navigating away from Match and back within the session.
+ * See ADR-0010 for the invalidation rules above. */
+export function setStoredGapAnalysis(analysis: GapAnalysis): void {
+  writeJson(GAP_ANALYSIS_KEY, analysis);
+}
+
+/** Clears all wizard state. Used by the wizard status panel's "Start
+ * over" reset (feature 007) — previously kept for completeness
+ * alongside the more targeted `resetForNewJob` below, with no caller
+ * of its own until now. */
 export function clearWizardState(): void {
   removeKey(RESUME_KEY);
   removeKey(JOB_DESCRIPTION_KEY);
   removeKey(JD_ANALYSIS_KEY);
   removeKey(RESUME_ANALYSIS_KEY);
+  removeKey(GAP_ANALYSIS_KEY);
 }
 
 /**
@@ -131,13 +166,14 @@ export function clearWizardState(): void {
  * the job-description-and-beyond state so the candidate can compare
  * against a new job without re-uploading. `Resume`, `ResumeAnalysis`,
  * and `WorkingResumeCopy` (including its applied edits) are left
- * untouched — `GapAnalysis` and not-yet-applied `TailoringOutput`
- * suggestions were never persisted here in the first place (they only
- * ever lived in /analyze/match's local React state), so navigating
- * away already discards them; only the JobDescription/JDAnalysis keys
- * need an explicit clear.
+ * untouched. `GapAnalysis` is cleared explicitly here (feature 007) —
+ * it's persisted now, and a new job invalidates the old fit result.
+ * Not-yet-applied `TailoringOutput` suggestions still need no explicit
+ * clear; they only ever live in /analyze/match's local React state, so
+ * navigating away already discards them.
  */
 export function resetForNewJob(): void {
   removeKey(JOB_DESCRIPTION_KEY);
   removeKey(JD_ANALYSIS_KEY);
+  removeKey(GAP_ANALYSIS_KEY);
 }

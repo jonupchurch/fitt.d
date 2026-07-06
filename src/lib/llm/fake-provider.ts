@@ -8,7 +8,10 @@ const FAKE_ERROR_TRIGGER = "trigger_fake_error";
 // pending" window (e.g. the navigation gate from ADR-0009) instead of
 // racing the fake provider's otherwise near-instant resolution.
 const SLOW_ANALYSIS_TRIGGER = "trigger_slow_analysis";
-const SLOW_ANALYSIS_DELAY_MS = 800;
+// Generous enough to stay observable even under heavy parallel e2e
+// worker contention (a shorter delay was observed to occasionally lose
+// the race against a slow goto+assert round trip at high worker counts).
+const SLOW_ANALYSIS_DELAY_MS = 2000;
 
 const JD_DEV_FIXTURE: JDAnalysis = {
   requiredSkills: ["React", "TypeScript"],
