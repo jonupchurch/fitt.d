@@ -239,16 +239,25 @@ function RewriteSuggestions({
 }
 
 export default function ReportPage() {
-  const { resume, setResumeAnalysis, setResumeAnalysisFailed } = useWizard();
-  const [analysis, setAnalysis] = useState<ResumeAnalysis | null>(null);
+  // resumeAnalysis is persisted (ADR-0010's pattern, established for
+  // GapAnalysis/TailoringOutput) — used directly as this page's source
+  // of truth instead of separate local state, so a cached result from
+  // an earlier visit this session is reused instead of recomputed.
+  const { resume, resumeAnalysis, setResumeAnalysis, setResumeAnalysisFailed } =
+    useWizard();
   const [error, setError] = useState<string | null>(null);
 
   // All state updates happen inside the timeout callback (a same-tick
   // setTimeout(fn, 0)), not synchronously in the effect body, to avoid
   // the react-hooks/set-state-in-effect render-cascade lint error —
   // same pattern as the job-description live preview.
+  //
+  // Skips entirely if resumeAnalysis is already present — either a
+  // cached result from earlier this session or one just computed and
+  // persisted below, which prevents this effect from re-firing a
+  // second call.
   useEffect(() => {
-    if (!resume) return;
+    if (!resume || resumeAnalysis) return;
 
     let cancelled = false;
     const timer = setTimeout(() => {
@@ -262,9 +271,9 @@ export default function ReportPage() {
           setResumeAnalysisFailed(true);
           return;
         }
-        setAnalysis(result.data);
-        // Persisted so feature 004's /analyze/match can find it without
-        // recomputing — see wizard-state.ts.
+        // Persisted so this page (on a later revisit) and feature
+        // 004's /analyze/match can both find it without recomputing —
+        // see wizard-state.ts.
         setResumeAnalysis(result.data);
       });
     }, 0);
@@ -273,9 +282,9 @@ export default function ReportPage() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [resume, setResumeAnalysis, setResumeAnalysisFailed]);
+  }, [resume, resumeAnalysis, setResumeAnalysis, setResumeAnalysisFailed]);
 
-  const isLoading = resume !== null && analysis === null && error === null;
+  const isLoading = resume !== null && resumeAnalysis === null && error === null;
   const loadingMessage = useLoadingMessage(isLoading);
 
   if (!resume) {
@@ -354,15 +363,15 @@ export default function ReportPage() {
         </>
       ) : null}
 
-      {analysis ? (
+      {resumeAnalysis ? (
         <>
           <div className="flex flex-col items-center gap-6 rounded-2xl border border-n-200 bg-white p-6 sm:flex-row sm:items-start">
-            <ScoreRing score={analysis.overallScore} />
+            <ScoreRing score={resumeAnalysis.overallScore} />
             <div className="flex-1">
               <p className="mb-3 text-xs font-semibold tracking-wide text-n-600 uppercase">
                 ATS / formatting checks
               </p>
-              <AtsChecklist checks={analysis.atsChecks} />
+              <AtsChecklist checks={resumeAnalysis.atsChecks} />
             </div>
           </div>
 
@@ -370,22 +379,24 @@ export default function ReportPage() {
             <p className="mb-3 text-xs font-semibold tracking-wide text-n-600 uppercase">
               Section-by-section feedback
             </p>
-            <SectionFeedbackList feedback={analysis.sectionFeedback} />
+            <SectionFeedbackList feedback={resumeAnalysis.sectionFeedback} />
           </div>
 
           <div className="rounded-2xl border border-n-200 bg-white p-5">
             <StrengthsWeaknesses
-              strengths={analysis.strengths}
-              weaknesses={analysis.weaknesses}
+              strengths={resumeAnalysis.strengths}
+              weaknesses={resumeAnalysis.weaknesses}
             />
           </div>
 
-          {analysis.rewriteSuggestions.length > 0 ? (
+          {resumeAnalysis.rewriteSuggestions.length > 0 ? (
             <div>
               <p className="mb-3 text-xs font-semibold tracking-wide text-n-600 uppercase">
                 Rewrite suggestions
               </p>
-              <RewriteSuggestions suggestions={analysis.rewriteSuggestions} />
+              <RewriteSuggestions
+                suggestions={resumeAnalysis.rewriteSuggestions}
+              />
             </div>
           ) : null}
 

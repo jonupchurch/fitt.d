@@ -114,6 +114,34 @@ test.describe("resume analysis report", () => {
     await expect(page).toHaveURL("/analyze/job");
   });
 
+  test("reuses the cached resume analysis on revisit instead of recomputing (ADR-0010)", async ({
+    page,
+  }) => {
+    let resumeActionCalls = 0;
+    await page.route("**/analyze/report", async (route) => {
+      const request = route.request();
+      if (request.method() === "POST" && request.headers()["next-action"]) {
+        resumeActionCalls++;
+      }
+      await route.continue();
+    });
+
+    await submitResume(
+      page,
+      "Jane Doe\nSenior Frontend Engineer with 5 years of experience.",
+    );
+    await expect(page.getByText("ATS / formatting checks")).toBeVisible();
+    expect(resumeActionCalls).toBe(1);
+
+    // Navigate away and back with nothing changed — the cached result
+    // must appear instantly with no additional model call.
+    await page.goto("/analyze/upload");
+    await page.goto("/analyze/report");
+
+    await expect(page.getByText("ATS / formatting checks")).toBeVisible();
+    expect(resumeActionCalls).toBe(1);
+  });
+
   test("progress bar links to Resume analyzed between Upload and Job desc.", async ({
     page,
   }) => {

@@ -679,3 +679,34 @@ this addition: 85.4% statements, 71.2% branches, 83.3% functions, 88.5%
 lines (aggregate across the unit-tested logic layer only; UI code under
 `src/app`/`src/components` is exercised by Playwright instead, which
 doesn't produce a comparable percentage).
+
+## 2026-07-06 — Fix: same recompute bug on the resume-analysis page, plus a nav/status desync
+
+Two more instances of the pattern just fixed on the Match page:
+
+- `/analyze/report` had the identical bug — it kept its own local
+  `analysis` state instead of reading `useWizard()`'s persisted
+  `resumeAnalysis`, so it re-ran `analyzeResume` on every visit even
+  with an unchanged resume. Worse, each unnecessary
+  `setResumeAnalysis` call unconditionally cleared the *already-computed
+  and correct* `GapAnalysis`/`TailoringOutput` too (ADR-0010's
+  invalidate-on-write rule doesn't know the "new" write is identical to
+  the old one) — so simply revisiting the resume page and then jumping
+  back to Match silently threw away a perfectly valid fit result. Fixed
+  the same way as the Match page: `resumeAnalysis` is now used directly
+  as this page's source of truth, and the effect skips `analyzeResume`
+  entirely once it's already present.
+- The top wizard progress bar's "fitt.d" step still used the old
+  "both prerequisite analyses exist" criterion, while the status panel
+  (feature 007) correctly used "the fit has actually been computed"
+  (`gapAnalysis !== null`). The two could disagree — the nav bar
+  showing ✓ while the status panel still showed not-done for the exact
+  same concept. Both now read `gapAnalysis !== null`.
+- New e2e test in `analyze-report.spec.ts` proves the resume-analysis
+  Server Action is called exactly once across a revisit; extended the
+  existing Match status-panel test to assert the nav bar and status
+  panel agree at every stage, not just that both are visible.
+- Hardened a genuine, if minor, test-only flake found in the process
+  (`wizard-status-panel.spec.ts`'s one-shot `textContent()` reads could
+  occasionally race a fresh full-page navigation's client-side
+  hydration correction) by switching to `expect.poll()`.

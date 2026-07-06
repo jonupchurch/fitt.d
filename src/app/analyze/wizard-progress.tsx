@@ -12,7 +12,7 @@ type Step = {
 
 export function WizardProgress() {
   const pathname = usePathname();
-  const { resume, jobDescription, jdAnalysis, resumeAnalysis, resumeAnalysisFailed } =
+  const { resume, jobDescription, resumeAnalysis, resumeAnalysisFailed, gapAnalysis } =
     useWizard();
 
   // Per ADR-0009 / spec.md FR-011 (amended): while a resume exists but
@@ -38,12 +38,14 @@ export function WizardProgress() {
       href: resumeAnalysisPending ? null : "/analyze/job",
       done: jobDescription !== null,
     },
-    // "done" here means both analyses are ready to compare, not that
-    // the candidate has actually opened/viewed the fitt.d match yet.
+    // "done" means the fit has actually been computed (gapAnalysis
+    // persisted, ADR-0010) — matching the wizard status panel's
+    // (feature 007) "fitt.d analysis" checkpoint exactly, rather than
+    // the two disagreeing about the same concept.
     {
       label: "fitt.d",
       href: resumeAnalysisPending ? null : "/analyze/match",
-      done: jdAnalysis !== null && resumeAnalysis !== null,
+      done: gapAnalysis !== null,
     },
   ];
 
