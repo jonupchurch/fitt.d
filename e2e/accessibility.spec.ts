@@ -8,6 +8,7 @@ const routes = [
   "/analyze/job",
   "/analyze/report",
   "/analyze/match",
+  "/about",
   // No `d` param — exercises /share's malformed-link error state.
   "/share",
 ];

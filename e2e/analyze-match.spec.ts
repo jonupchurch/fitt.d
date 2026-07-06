@@ -112,7 +112,12 @@ test.describe("match & comparison", () => {
     );
 
     await page.goto("/analyze/upload");
-    await page.getByRole("link", { name: /fitt\.d/i }).click();
+    // Scoped to the wizard's own progress list — the sitewide header
+    // (feature 006) also has a "Fitt.d" logo link matching /fitt\.d/i.
+    await page
+      .getByRole("list", { name: "Progress" })
+      .getByRole("link", { name: /fitt\.d/i })
+      .click();
     await expect(page).toHaveURL("/analyze/match");
   });
 });
