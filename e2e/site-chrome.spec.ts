@@ -81,7 +81,7 @@ test.describe("about page", () => {
 });
 
 test.describe("sitewide footer", () => {
-  test("shows a copyright notice on every route, including a shared report", async ({
+  test("shows a copyright notice and current version on every route, including a shared report", async ({
     page,
   }) => {
     const shareUrl = encodeShareLink({
@@ -93,9 +93,11 @@ test.describe("sitewide footer", () => {
 
     for (const route of ["/", ...WIZARD_ROUTES, "/about", shareUrl]) {
       await page.goto(route);
+      const footer = page.getByRole("contentinfo");
       await expect(
-        page.getByRole("contentinfo").getByText(/©\s*\d{4}\s*fitt\.d/i),
+        footer.getByText(/©\s*\d{4}\s*by fitt\.d and jon upchurch/i),
       ).toBeVisible();
+      await expect(footer.getByText(/current version: \S+/i)).toBeVisible();
     }
   });
 });

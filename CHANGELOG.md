@@ -755,3 +755,17 @@ full spec → plan → tasks → implement pipeline in one sitting.
   rendered).
 - No ADR needed — pure presentational content, the same reasoning as
   feature 006.
+
+## 2026-07-06 — Polish: footer copyright + live version display
+
+- `src/components/site-footer.tsx` now renders two lines: `© {year} by
+  Fitt.d and Jon Upchurch`, and `Current Version: {version}` sourced
+  directly from `package.json` (`resolveJsonModule` was already on),
+  rather than a hardcoded string that would drift from reality.
+- `package.json`'s `version` field, previously an untouched scaffold
+  default (`0.1.0`), is synced to `0.99.1` to match the latest
+  `version-0.99.1` git tag — establishing it going forward as the
+  single source of truth the footer (and any future about-this-build
+  UI) reads from.
+- `e2e/site-chrome.spec.ts`'s sitewide-footer test updated to check
+  both lines independently instead of one combined regex.
