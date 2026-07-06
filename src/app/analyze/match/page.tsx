@@ -2,10 +2,14 @@
 
 import { experimental_useObject as useObject } from "@ai-sdk/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { highlightMatches, type HighlightedSegment } from "@/lib/compare/highlight";
+import { buildTailoredResumeDocx } from "@/lib/export/build-docx";
 import {
   TailoringOutputSchema,
   type GapAnalysis,
+  type ResumeAnalysis,
   type TailoringOutput,
 } from "@/lib/llm/schemas";
 import {
@@ -13,6 +17,7 @@ import {
   getWorkingCopy,
   initWorkingCopy,
 } from "@/lib/resume/working-copy";
+import { encodeShareLink } from "@/lib/share/report-link";
 import { useWizard } from "../wizard-context";
 import { analyzeGap } from "./actions";
 
@@ -220,6 +225,123 @@ function ClosingAdvice({ advice }: { advice: GapAnalysis["closingAdvice"] }) {
   );
 }
 
+/** Renders a resume's structured sections as plain, readable text — the
+ * input `highlightMatches()` runs against for the comparison view. */
+function sectionsToText(sections: ResumeAnalysis["sections"]): string {
+  const parts: string[] = [];
+  if (sections.summary) parts.push(sections.summary);
+  for (const entry of sections.experience) {
+    const roleLine = [entry.role, entry.company].filter(Boolean).join(" — ");
+    if (roleLine) parts.push(roleLine);
+    parts.push(...entry.bullets);
+  }
+  if (sections.skills.length > 0) {
+    parts.push(`Skills: ${sections.skills.join(", ")}`);
+  }
+  for (const entry of sections.education) {
+    const line = [entry.institution, entry.credential]
+      .filter(Boolean)
+      .join(" — ");
+    if (line) parts.push(line);
+  }
+  return parts.join("\n");
+}
+
+function HighlightedText({ segments }: { segments: HighlightedSegment[] }) {
+  return (
+    <>
+      {segments.map((segment, index) =>
+        segment.highlighted ? (
+          <mark key={index} className="rounded bg-cyan-100 px-0.5 text-ink">
+            {segment.text}
+          </mark>
+        ) : (
+          <span key={index}>{segment.text}</span>
+        ),
+      )}
+    </>
+  );
+}
+
+function ComparisonPanel({
+  resumeText,
+  jobDescriptionText,
+  matchedSkillNames,
+}: {
+  resumeText: string;
+  jobDescriptionText: string;
+  matchedSkillNames: string[];
+}) {
+  const [activeTab, setActiveTab] = useState<"resume" | "job">("resume");
+
+  return (
+    <div>
+      <p className="mb-3 text-xs font-semibold tracking-wide text-n-600 uppercase">
+        Side-by-side comparison
+      </p>
+      <div className="mb-3 flex gap-2 print:hidden sm:hidden">
+        <button
+          type="button"
+          onClick={() => setActiveTab("resume")}
+          aria-pressed={activeTab === "resume"}
+          className={`rounded-full px-4 py-1.5 text-xs font-semibold ${
+            activeTab === "resume"
+              ? "bg-brand-strong text-white"
+              : "border border-n-300 text-n-700"
+          }`}
+        >
+          Resume
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("job")}
+          aria-pressed={activeTab === "job"}
+          className={`rounded-full px-4 py-1.5 text-xs font-semibold ${
+            activeTab === "job"
+              ? "bg-brand-strong text-white"
+              : "border border-n-300 text-n-700"
+          }`}
+        >
+          Job description
+        </button>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div
+          className={`rounded-2xl border border-n-200 bg-white p-5 ${
+            activeTab === "resume" ? "" : "hidden sm:block"
+          }`}
+        >
+          <p className="mb-2 text-xs font-semibold tracking-wide text-n-600 uppercase">
+            Your resume
+          </p>
+          <p className="text-sm whitespace-pre-line text-ink">
+            <HighlightedText
+              segments={highlightMatches(resumeText, matchedSkillNames)}
+            />
+          </p>
+        </div>
+        <div
+          className={`rounded-2xl border border-n-200 bg-white p-5 ${
+            activeTab === "job" ? "" : "hidden sm:block"
+          }`}
+        >
+          <p className="mb-2 text-xs font-semibold tracking-wide text-n-600 uppercase">
+            Job description
+          </p>
+          <p className="text-sm whitespace-pre-line text-ink">
+            <HighlightedText
+              segments={highlightMatches(
+                jobDescriptionText,
+                matchedSkillNames,
+              )}
+            />
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 type PartialBullet = {
   original?: string;
   rewritten?: string;
@@ -285,7 +407,7 @@ function TailoringPanel({
                         onClick={() =>
                           onApply(index, bullet.original!, bullet.rewritten!)
                         }
-                        className="mt-3 rounded-full border border-brand px-4 py-1.5 text-xs font-semibold text-brand-strong transition-colors hover:bg-cyan-50"
+                        className="mt-3 rounded-full border border-brand px-4 py-1.5 text-xs font-semibold text-brand-strong transition-colors hover:bg-cyan-50 print:hidden"
                       >
                         Apply to working copy
                       </button>
@@ -341,7 +463,7 @@ function TailoringPanel({
                   void navigator.clipboard.writeText(coverLetterOpener);
                   setCopiedOpener(true);
                 }}
-                className="mt-3 rounded-full border border-brand px-4 py-1.5 text-xs font-semibold text-brand-strong transition-colors hover:bg-cyan-50"
+                className="mt-3 rounded-full border border-brand px-4 py-1.5 text-xs font-semibold text-brand-strong transition-colors hover:bg-cyan-50 print:hidden"
               >
                 {copiedOpener ? "Copied!" : "Copy opener"}
               </button>
@@ -354,10 +476,16 @@ function TailoringPanel({
 }
 
 export default function MatchPage() {
-  const { resume, jdAnalysis, resumeAnalysis } = useWizard();
+  const router = useRouter();
+  const { resume, jobDescription, jdAnalysis, resumeAnalysis, resetForNewJob } =
+    useWizard();
 
   const [gapAnalysis, setGapAnalysis] = useState<GapAnalysis | null>(null);
   const [gapError, setGapError] = useState<string | null>(null);
+
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [shareCopied, setShareCopied] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const [tailoringOutput, setTailoringOutput] =
     useState<TailoringOutput | null>(null);
@@ -475,6 +603,43 @@ export default function MatchPage() {
       next.add(index);
       return next;
     });
+  }
+
+  function handleShare() {
+    if (!gapAnalysis) return;
+    const url = encodeShareLink({
+      fitScore: gapAnalysis.fitScore,
+      matchedSkills: gapAnalysis.matchedSkills.map((entry) => entry.skill),
+      missingSkills: gapAnalysis.missingSkills.map((entry) => entry.skill),
+      rationale: gapAnalysis.rationale,
+    });
+    setShareUrl(url);
+    setShareCopied(false);
+  }
+
+  function handleCopyShareUrl() {
+    if (!shareUrl) return;
+    void navigator.clipboard.writeText(shareUrl);
+    setShareCopied(true);
+  }
+
+  async function handleDownloadDocx() {
+    const workingCopy = getWorkingCopy();
+    if (!workingCopy) return;
+    setIsDownloading(true);
+    const blob = await buildTailoredResumeDocx(workingCopy);
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "tailored-resume.docx";
+    link.click();
+    URL.revokeObjectURL(url);
+    setIsDownloading(false);
+  }
+
+  function handleTryAnotherJob() {
+    resetForNewJob();
+    router.push("/analyze/job");
   }
 
   if (!resume) {
@@ -601,6 +766,18 @@ export default function MatchPage() {
             <ClosingAdvice advice={gapAnalysis.closingAdvice} />
           </div>
 
+          {jobDescription ? (
+            <ComparisonPanel
+              resumeText={sectionsToText(
+                getWorkingCopy()?.sections ?? resumeAnalysis.sections,
+              )}
+              jobDescriptionText={jobDescription.rawText}
+              matchedSkillNames={gapAnalysis.matchedSkills.map(
+                (entry) => entry.skill,
+              )}
+            />
+          ) : null}
+
           {tailoringError ? (
             <p
               role="alert"
@@ -658,6 +835,58 @@ export default function MatchPage() {
                 onApply={handleApply}
                 appliedIndices={appliedIndices}
               />
+            </div>
+          ) : null}
+
+          <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-n-200 bg-white p-5 print:hidden">
+            <button
+              type="button"
+              onClick={() => window.print()}
+              className="rounded-full bg-brand-strong px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
+            >
+              Export report (PDF)
+            </button>
+            <button
+              type="button"
+              onClick={handleShare}
+              className="rounded-full border border-brand px-5 py-2.5 text-sm font-semibold text-brand-strong transition-colors hover:bg-cyan-50"
+            >
+              Get shareable link
+            </button>
+            <button
+              type="button"
+              onClick={() => void handleDownloadDocx()}
+              disabled={isDownloading}
+              className="rounded-full border border-brand px-5 py-2.5 text-sm font-semibold text-brand-strong transition-colors hover:bg-cyan-50 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isDownloading ? "Preparing…" : "Download tailored resume (.docx)"}
+            </button>
+            <button
+              type="button"
+              onClick={handleTryAnotherJob}
+              className="rounded-full border border-n-300 px-5 py-2.5 text-sm font-semibold text-n-700 transition-colors hover:bg-n-50"
+            >
+              Try another job
+            </button>
+          </div>
+
+          {shareUrl ? (
+            <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-n-200 bg-white p-4 print:hidden">
+              <input
+                type="text"
+                readOnly
+                value={shareUrl}
+                aria-label="Shareable report link"
+                onFocus={(event) => event.target.select()}
+                className="min-w-0 flex-1 rounded-lg border border-n-300 bg-n-50 px-3 py-2 text-sm text-ink"
+              />
+              <button
+                type="button"
+                onClick={handleCopyShareUrl}
+                className="rounded-full border border-brand px-4 py-2 text-xs font-semibold text-brand-strong transition-colors hover:bg-cyan-50"
+              >
+                {shareCopied ? "Copied!" : "Copy link"}
+              </button>
             </div>
           ) : null}
         </>

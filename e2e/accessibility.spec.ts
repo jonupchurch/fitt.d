@@ -1,5 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
+import { encodeShareLink } from "../src/lib/share/report-link";
 
 const routes = [
   "/",
@@ -7,6 +8,8 @@ const routes = [
   "/analyze/job",
   "/analyze/report",
   "/analyze/match",
+  // No `d` param — exercises /share's malformed-link error state.
+  "/share",
 ];
 
 for (const route of routes) {
@@ -95,6 +98,24 @@ test("/analyze/match's populated results (including an applied bullet) have no a
   await expect(page.getByText("Tailored for this job")).toBeVisible();
   await page.getByRole("button", { name: /apply to working copy/i }).click();
   await expect(page.getByText(/^✓ Applied$/)).toBeVisible();
+  await page.getByRole("button", { name: /get shareable link/i }).click();
+  await expect(page.getByLabel("Shareable report link")).toBeVisible();
+
+  const results = await new AxeBuilder({ page }).analyze();
+  expect(results.violations).toEqual([]);
+});
+
+test("/share's populated summary has no automatically detectable accessibility violations", async ({
+  page,
+}) => {
+  const url = encodeShareLink({
+    fitScore: 72,
+    matchedSkills: ["React", "TypeScript"],
+    missingSkills: ["GraphQL"],
+    rationale: "Strong overlap on core skills, missing one nice-to-have.",
+  });
+  await page.goto(url);
+  await expect(page.getByText("Shared resume-match report")).toBeVisible();
 
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations).toEqual([]);

@@ -512,3 +512,55 @@ All 26 tasks complete, full quality bar green (`typecheck`, `lint`,
   (embedded via a JD text phrase, propagated through the stored
   `JDAnalysis`) so both the gap-analysis and tailoring error paths are
   reachable through the real UI in e2e tests, not just unit tests.
+
+## 2026-07-05 — Feature 005: Side-by-Side Comparison & Export (implemented)
+
+All 21 tasks complete, full quality bar green (`typecheck`, `lint`,
+`test` — 60 passing, `test:e2e` — 48 passing, `eval`, `build`). **This
+closes out the full MVP** — features 001–005 are all implemented,
+tested, and live.
+
+- `/analyze/match` gained its final panels: a side-by-side resume ↔ job
+  description comparison (matched skills highlighted via a new
+  `highlightMatches()` utility, reflecting the *current* working resume
+  copy including applied edits — not the original upload), a tabbed
+  Resume ⇄ Job description view on narrow viewports, an "Export report"
+  button (print stylesheet, real browser "Save as PDF"), a "Get
+  shareable link" action, a "Download tailored resume (.docx)" button,
+  and "Try another job" (resets the job-description step while
+  preserving the resume, its analysis, and applied working-copy edits).
+- This is the only MVP feature with **zero new LLM calls or Server
+  Actions** — everything renders/exports data features 001–004 already
+  produced entirely client-side, per `research.md`.
+- New public, read-only `/share` route: the entire report summary
+  (fit score, matched/missing skill names, rationale — deliberately
+  never raw resume/JD text) is encoded directly into the URL
+  (`src/lib/share/report-link.ts`, hand-rolled base64url codec using
+  only `TextEncoder`/`TextDecoder` so it decodes identically
+  server-side and client-side), with no new database or server-side
+  storage. Full reasoning in
+  `docs/adr/0008-shareable-link-without-persistence.md`.
+- `.docx` generation (`docx` package, new dependency) and PDF export
+  both run without a network round-trip — see
+  `docs/adr/0007-report-export-approach.md`.
+- **A real bug found and fixed**: clicking "Continue" on the job-
+  description page was silently wiping the `JDAnalysis` the live
+  preview had *just* computed. Feature 004's "a new JobDescription
+  invalidates its stale analysis" guard (added when `JDAnalysis` was
+  first persisted) compared against a `previous` value that's `null`
+  on first save, so it always looked "different" and cleared the
+  freshly-computed analysis — this had been silently breaking the
+  intended flow (type a JD, see the live preview, click Continue)
+  since feature 004 shipped, only surfaced now because this feature's
+  e2e tests are the first to click Continue *after* the live preview
+  already fired. Fixed by removing that invalidation entirely for
+  `JobDescription` (the live-preview effect already keeps `JDAnalysis`
+  in sync with the current text on every debounced change, so it's
+  never genuinely stale by the time Continue is clicked); `Resume`'s
+  analogous guard was left in place since resume analysis can only
+  ever be computed *after* the resume itself is saved, so no such race
+  exists there.
+- Another real accessibility gap found and fixed: the new `/share`
+  route had no landmark region (a bare `<div>` instead of `<main>`),
+  unlike every other route in the app — axe's `region` rule caught it
+  immediately once `/share` was added to the a11y test suite.

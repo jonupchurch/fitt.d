@@ -13,6 +13,7 @@ import {
   getJobDescriptionRaw,
   getResumeAnalysisRaw,
   getResumeRaw,
+  resetForNewJob,
   setStoredJdAnalysis,
   setStoredJobDescription,
   setStoredResume,
@@ -43,6 +44,7 @@ type WizardContextValue = {
   setJobDescription: (jobDescription: JobDescription) => void;
   setJdAnalysis: (analysis: JDAnalysis) => void;
   setResumeAnalysis: (analysis: ResumeAnalysis) => void;
+  resetForNewJob: () => void;
 };
 
 const WizardContext = createContext<WizardContextValue | null>(null);
@@ -97,6 +99,7 @@ export function WizardProvider({ children }: { children: ReactNode }) {
       setJobDescription: setStoredJobDescription,
       setJdAnalysis: setStoredJdAnalysis,
       setResumeAnalysis: setStoredResumeAnalysis,
+      resetForNewJob,
     }),
     [resume, jobDescription, jdAnalysis, resumeAnalysis],
   );

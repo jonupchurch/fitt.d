@@ -55,9 +55,13 @@ export function getStoredResume(): Resume | null {
 }
 
 export function setStoredResume(resume: Resume): void {
+  const previous = getStoredResume();
   writeJson(RESUME_KEY, resume);
-  // A new resume invalidates any analysis computed against the old one.
-  removeKey(RESUME_ANALYSIS_KEY);
+  // Only invalidate the analysis if the content actually changed —
+  // saving the same resume again shouldn't discard a valid analysis.
+  if (previous?.rawText !== resume.rawText) {
+    removeKey(RESUME_ANALYSIS_KEY);
+  }
 }
 
 export function getJobDescriptionRaw(): string | null {
@@ -70,9 +74,17 @@ export function getStoredJobDescription(): JobDescription | null {
 
 export function setStoredJobDescription(jobDescription: JobDescription): void {
   writeJson(JOB_DESCRIPTION_KEY, jobDescription);
-  // A new job description invalidates any analysis computed against the
-  // old one.
-  removeKey(JD_ANALYSIS_KEY);
+  // Deliberately does NOT clear JD_ANALYSIS_KEY here. Unlike Resume
+  // (whose analysis only ever gets computed after Resume is saved),
+  // the live preview (feature 002) typically computes JDAnalysis from
+  // this exact text *before* Continue is ever clicked, independent of
+  // submission — there's no reliable "previous text" to compare
+  // against (on the very first save, `previous` is null, which would
+  // always look "different" and wipe the just-computed analysis out
+  // from under feature 004/005's cross-feature dependency on it). The
+  // live-preview effect already keeps JDAnalysis in sync with
+  // whatever text is currently in the textarea on every debounced
+  // change, so it's never genuinely stale by the time this runs.
 }
 
 export function getJdAnalysisRaw(): string | null {
@@ -105,11 +117,27 @@ export function setStoredResumeAnalysis(analysis: ResumeAnalysis): void {
   writeJson(RESUME_ANALYSIS_KEY, analysis);
 }
 
-/** Clears all wizard state. Not used by feature 001 itself, but kept
- * ready for feature 005's "Try another job" reset. */
+/** Clears all wizard state. Not used by any feature — kept for
+ * completeness alongside the more targeted `resetForNewJob` below. */
 export function clearWizardState(): void {
   removeKey(RESUME_KEY);
   removeKey(JOB_DESCRIPTION_KEY);
   removeKey(JD_ANALYSIS_KEY);
   removeKey(RESUME_ANALYSIS_KEY);
+}
+
+/**
+ * "Try another job" (feature 005, spec.md FR-008/FR-009): clears only
+ * the job-description-and-beyond state so the candidate can compare
+ * against a new job without re-uploading. `Resume`, `ResumeAnalysis`,
+ * and `WorkingResumeCopy` (including its applied edits) are left
+ * untouched — `GapAnalysis` and not-yet-applied `TailoringOutput`
+ * suggestions were never persisted here in the first place (they only
+ * ever lived in /analyze/match's local React state), so navigating
+ * away already discards them; only the JobDescription/JDAnalysis keys
+ * need an explicit clear.
+ */
+export function resetForNewJob(): void {
+  removeKey(JOB_DESCRIPTION_KEY);
+  removeKey(JD_ANALYSIS_KEY);
 }

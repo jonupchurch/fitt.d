@@ -21,7 +21,7 @@ description: "Task list for feature 005 - Side-by-Side Comparison & Export"
 
 ## Phase 1: Setup
 
-- [ ] T001 Add `docx` as a dependency in `package.json`, run `npm install`, and commit the updated `package-lock.json`
+- [X] T001 Add `docx` as a dependency in `package.json`, run `npm install`, and commit the updated `package-lock.json`
 
 **Checkpoint**: New dependency installed; no application code changed yet.
 
@@ -41,13 +41,13 @@ description: "Task list for feature 005 - Side-by-Side Comparison & Export"
 
 ### Tests for User Story 1
 
-- [ ] T002 [P] [US1] Vitest tests for `highlight.ts` covering no-match, multiple-occurrence, and case-insensitive matching in `tests/compare/highlight.test.ts`
+- [X] T002 [P] [US1] Vitest tests for `highlight.ts` covering no-match, multiple-occurrence, and case-insensitive matching in `tests/compare/highlight.test.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T003 [US1] Implement `highlightMatches()` in `src/lib/compare/highlight.ts` per `contracts/actions.md`
-- [ ] T004 [US1] Add the side-by-side (resume | job description) panel to `src/app/analyze/match/page.tsx`, using `highlight.ts` against the current `WorkingResumeCopy`, `JobDescription`, and `GapAnalysis`'s matched/missing skills (depends on: T003)
-- [ ] T005 [US1] Add the mobile tabbed (Resume ⇄ Job Description) layout variant to the same panel (depends on: T004)
+- [X] T003 [US1] Implement `highlightMatches()` in `src/lib/compare/highlight.ts` per `contracts/actions.md`
+- [X] T004 [US1] Add the side-by-side (resume | job description) panel to `src/app/analyze/match/page.tsx`, using `highlight.ts` against the current `WorkingResumeCopy`, `JobDescription`, and `GapAnalysis`'s matched/missing skills (depends on: T003)
+- [X] T005 [US1] Add the mobile tabbed (Resume ⇄ Job Description) layout variant to the same panel (depends on: T004)
 
 **Checkpoint**: User Story 1 is fully functional and independently testable.
 
@@ -61,11 +61,11 @@ description: "Task list for feature 005 - Side-by-Side Comparison & Export"
 
 ### Implementation for User Story 2
 
-- [ ] T006 [US2] Add a print stylesheet (`@media print`) and an "Export report" button triggering `window.print()` to `src/app/analyze/match/page.tsx`, disabled until a gap analysis exists (spec.md FR-012)
-- [ ] T007 [US2] Implement `encodeShareLink()`/`decodeShareLink()` in `src/lib/share/report-link.ts` per `contracts/actions.md` — trimmed summary only (fit score, matched/missing skill names, rationale), never raw resume/JD text
-- [ ] T008 [P] [US2] Vitest tests for `report-link.ts` covering the encode/decode round-trip and a malformed-payload case in `tests/share/report-link.test.ts`
-- [ ] T009 [US2] Scaffold the public `/share` route in `src/app/share/page.tsx`: decodes the payload via `report-link.ts`, renders a read-only summary, shows a clear message on a malformed payload (depends on: T007)
-- [ ] T010 [US2] Add a "Get shareable link" action to `src/app/analyze/match/page.tsx`, calling `encodeShareLink()` and displaying/copying the resulting URL, disabled until a gap analysis exists (depends on: T007)
+- [X] T006 [US2] Add a print stylesheet (`@media print`) and an "Export report" button triggering `window.print()` to `src/app/analyze/match/page.tsx`, disabled until a gap analysis exists (spec.md FR-012)
+- [X] T007 [US2] Implement `encodeShareLink()`/`decodeShareLink()` in `src/lib/share/report-link.ts` per `contracts/actions.md` — trimmed summary only (fit score, matched/missing skill names, rationale), never raw resume/JD text
+- [X] T008 [P] [US2] Vitest tests for `report-link.ts` covering the encode/decode round-trip and a malformed-payload case in `tests/share/report-link.test.ts`
+- [X] T009 [US2] Scaffold the public `/share` route in `src/app/share/page.tsx`: decodes the payload via `report-link.ts`, renders a read-only summary, shows a clear message on a malformed payload (depends on: T007)
+- [X] T010 [US2] Add a "Get shareable link" action to `src/app/analyze/match/page.tsx`, calling `encodeShareLink()` and displaying/copying the resulting URL, disabled until a gap analysis exists (depends on: T007)
 
 **Checkpoint**: User Stories 1 and 2 both independently functional.
 
@@ -79,9 +79,9 @@ description: "Task list for feature 005 - Side-by-Side Comparison & Export"
 
 ### Implementation for User Story 3
 
-- [ ] T011 [US3] Implement `buildTailoredResumeDocx()` in `src/lib/export/build-docx.ts` using the `docx` package, run entirely client-side (depends on: T001)
-- [ ] T012 [P] [US3] Vitest tests for `build-docx.ts` asserting a valid `.docx` buffer is produced both with and without applied edits, in `tests/export/build-docx.test.ts` (depends on: T011)
-- [ ] T013 [US3] Add a "Download tailored resume" button to `src/app/analyze/match/page.tsx`, calling `buildTailoredResumeDocx()` and triggering a `Blob` download, disabled until a gap analysis exists (depends on: T011)
+- [X] T011 [US3] Implement `buildTailoredResumeDocx()` in `src/lib/export/build-docx.ts` using the `docx` package, run entirely client-side (depends on: T001)
+- [X] T012 [P] [US3] Vitest tests for `build-docx.ts` asserting a valid `.docx` buffer is produced both with and without applied edits, in `tests/export/build-docx.test.ts` (depends on: T011)
+- [X] T013 [US3] Add a "Download tailored resume" button to `src/app/analyze/match/page.tsx`, calling `buildTailoredResumeDocx()` and triggering a `Blob` download, disabled until a gap analysis exists (depends on: T011)
 
 **Checkpoint**: User Stories 1, 2, and 3 all independently functional.
 
@@ -95,8 +95,8 @@ description: "Task list for feature 005 - Side-by-Side Comparison & Export"
 
 ### Implementation for User Story 4
 
-- [ ] T014 [US4] Implement the reset logic: clear `sessionStorage` entries for `JobDescription`, `JDAnalysis`, `GapAnalysis`, and not-yet-applied `TailoringOutput` suggestions, while preserving `Resume`, `ResumeAnalysis`, and `WorkingResumeCopy` (including applied edits), then navigate to `/analyze/job`
-- [ ] T015 [US4] Add the "Try another job" button to `src/app/analyze/match/page.tsx`, wired to T014's reset logic
+- [X] T014 [US4] Implement the reset logic: clear `sessionStorage` entries for `JobDescription`, `JDAnalysis`, `GapAnalysis`, and not-yet-applied `TailoringOutput` suggestions, while preserving `Resume`, `ResumeAnalysis`, and `WorkingResumeCopy` (including applied edits), then navigate to `/analyze/job`
+- [X] T015 [US4] Add the "Try another job" button to `src/app/analyze/match/page.tsx`, wired to T014's reset logic
 
 **Checkpoint**: All four user stories independently functional — feature complete.
 
@@ -106,12 +106,12 @@ description: "Task list for feature 005 - Side-by-Side Comparison & Export"
 
 **Purpose**: Wrap-up items spanning all four stories.
 
-- [ ] T016 [P] Extend the accessibility check to cover `/analyze/match`'s new panels (comparison, export controls, disabled states) and the public `/share` route
-- [ ] T017 Add `e2e/analyze-match-export.spec.ts`: Playwright test covering the comparison view, export (print), share-link round-trip, `.docx` download, and "Try another job" reset, per `quickstart.md`
-- [ ] T018 [P] Author `docs/adr/0007-report-export-approach.md`
-- [ ] T019 [P] Author `docs/adr/0008-shareable-link-without-persistence.md`
-- [ ] T020 Run `quickstart.md` end-to-end and confirm every scenario passes
-- [ ] T021 Add a `CHANGELOG.md` entry summarizing feature 005 (Constitution Principle VI), included in the push that closes this feature — and note that this closes out full planning for the MVP (features 001–005)
+- [X] T016 [P] Extend the accessibility check to cover `/analyze/match`'s new panels (comparison, export controls, disabled states) and the public `/share` route
+- [X] T017 Add `e2e/analyze-match-export.spec.ts`: Playwright test covering the comparison view, export (print), share-link round-trip, `.docx` download, and "Try another job" reset, per `quickstart.md`
+- [X] T018 [P] Author `docs/adr/0007-report-export-approach.md`
+- [X] T019 [P] Author `docs/adr/0008-shareable-link-without-persistence.md`
+- [X] T020 Run `quickstart.md` end-to-end and confirm every scenario passes
+- [X] T021 Add a `CHANGELOG.md` entry summarizing feature 005 (Constitution Principle VI), included in the push that closes this feature — and note that this closes out full planning for the MVP (features 001–005)
 
 ---
 

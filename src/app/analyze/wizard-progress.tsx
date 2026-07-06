@@ -31,7 +31,10 @@ export function WizardProgress() {
   ];
 
   return (
-    <ol aria-label="Progress" className="flex flex-wrap items-center gap-2">
+    <ol
+      aria-label="Progress"
+      className="flex flex-wrap items-center gap-2 print:hidden"
+    >
       {steps.map((step, index) => {
         const isCurrent = step.href !== null && pathname === step.href;
         const badgeAndLabel = (
