@@ -9,6 +9,20 @@ the spot — this is the list to work from once the core MVP (features
 Each entry: what it is, which feature it came up during, and why it
 was deferred rather than folded in.
 
+## Measured (not estimated) cost-per-analysis figure in the README
+
+Surfaced during: a repo-wide stale-artifact review, 2026-07-06.
+
+`docs/non-functional.md` has said since session 0 that a real cost
+figure should appear in the README "once real numbers exist." Real
+per-call cost logging now exists
+([ADR-0011](adr/0011-structured-model-call-logging.md)), but a single
+synthetic run's token count wouldn't be an honest "measured" figure —
+this needs real production traffic to average over.
+
+Deferred rather than built now: needs the app to actually run in
+production for a while first.
+
 ## Downloadable resume/CV on the About page
 
 Surfaced during: feature 008 (About Page Bio & Journey), 2026-07-06.

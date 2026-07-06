@@ -3,6 +3,10 @@ import path from "node:path";
 import { Output, createTextStreamResponse, streamText, toTextStream } from "ai";
 import { currentModel } from "./provider";
 import {
+  estimateCostUsd,
+  logModelCall,
+} from "../observability/model-call-log";
+import {
   TailoringOutputSchema,
   type GapAnalysis,
   type JDAnalysis,
@@ -81,10 +85,33 @@ export async function tailorResumeResponse(
     .replace("{{resume_analysis_json}}", JSON.stringify(resumeAnalysis))
     .replace("{{jd_analysis_json}}", JSON.stringify(jdAnalysis));
 
+  const model = currentModel();
+  const requestId = crypto.randomUUID();
+  const startedAt = Date.now();
+
   const result = streamText({
-    model: currentModel(),
+    model,
     output: Output.object({ schema: TailoringOutputSchema }),
     prompt,
+    // Streaming has no synchronous catch point the way generateStructured's
+    // blocking call does (per ADR-0006, failures surface to the client
+    // through the stream itself), so only the success path is logged here.
+    onEnd: ({ usage }) => {
+      logModelCall({
+        requestId,
+        phase: "tailoring",
+        model,
+        latencyMs: Date.now() - startedAt,
+        inputTokens: usage.inputTokens,
+        outputTokens: usage.outputTokens,
+        estimatedCostUsd: estimateCostUsd(
+          model,
+          usage.inputTokens,
+          usage.outputTokens,
+        ),
+        outcome: "success",
+      });
+    },
   });
 
   return createTextStreamResponse({

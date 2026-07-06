@@ -19,11 +19,15 @@ target, the ADRs record the how.
 
 ## Cost
 
-- Log token count and estimated cost per request.
+- Log token count and estimated cost per request — implemented via
+  `src/lib/observability/model-call-log.ts`, see
+  [ADR-0011](adr/0011-structured-model-call-logging.md).
 - Target roughly $0.0X per full analysis; any repair/retry loop (Principle
   II) must be bounded so a bad model response can't multiply cost.
-- Surface a measured cost figure in the README once real numbers exist —
-  it's a small but real signal of production/business awareness.
+- A measured (not estimated) cost-per-analysis figure for the README
+  needs real production traffic to average over, not a single synthetic
+  run — tracked in `docs/future-work.md` as a deferred item now that the
+  logging to compute it actually exists.
 
 ## Limits & abuse
 
@@ -51,7 +55,7 @@ truncation.
   Principle II).
 - Structured logs: request id, phase, latency, tokens, cost, outcome —
   no PII, no raw resume/JD text (Constitution: stateless/ephemeral by
-  default).
+  default). See [ADR-0011](adr/0011-structured-model-call-logging.md).
 
 ## Compatibility
 

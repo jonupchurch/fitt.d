@@ -818,3 +818,28 @@ against the actual shipped code before touching it:
   Governance section as retained prior art, never meant to match the
   real repo.
 
+## 2026-07-06 — feat: structured per-call logging for every LLM request
+
+`docs/non-functional.md` has said since session 0 that every model
+call gets a structured log line (request id, phase, latency, tokens,
+cost, outcome, no PII) — never actually built; `provider.ts` only ever
+called `console.error` on failure, with nothing logged on success at
+all. Same root cause as the doc drift above: a target written down at
+session 0, never revisited once the real pipeline existed. See
+[ADR-0011](docs/adr/0011-structured-model-call-logging.md).
+
+- New `src/lib/observability/model-call-log.ts`: `logModelCall` prints
+  one structured JSON line per call (never prompt/response content),
+  `estimateCostUsd` computes a dollar figure from a small per-model
+  `$/M tokens` table seeded with the real Gateway prices confirmed
+  during the Haiku swap.
+- `generateStructured` (`provider.ts`) now takes a required `phase` and
+  logs at every exit point — first-try success, repaired success,
+  `invalid_output`, `provider_error` — with a request id and measured
+  latency. `tailorResumeResponse`'s streaming path logs its success
+  outcome via `streamText`'s `onEnd` callback.
+- `docs/non-functional.md` updated to link ADR-0011; its dangling
+  "surface a measured cost figure in the README" line moved to
+  `docs/future-work.md` as an explicitly deferred item — a single
+  synthetic run's token count wouldn't be an honest "measured" figure.
+

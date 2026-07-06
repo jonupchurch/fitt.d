@@ -47,7 +47,7 @@ describe("generateStructured (provider.ts retry behavior)", () => {
       output: { foo: "bar" },
     } as never);
 
-    const result = await generateStructured({ prompt: "test", schema });
+    const result = await generateStructured({ prompt: "test", schema, phase: "jd-analysis" });
 
     expect(result).toEqual({ ok: true, data: { foo: "bar" } });
     expect(generateText).toHaveBeenCalledTimes(1);
@@ -58,7 +58,7 @@ describe("generateStructured (provider.ts retry behavior)", () => {
       .mockRejectedValueOnce(new FakeNoObjectGeneratedError("garbled text"))
       .mockResolvedValueOnce({ output: { foo: "repaired" } } as never);
 
-    const result = await generateStructured({ prompt: "test", schema });
+    const result = await generateStructured({ prompt: "test", schema, phase: "jd-analysis" });
 
     expect(generateText).toHaveBeenCalledTimes(2);
     expect(result).toEqual({ ok: true, data: { foo: "repaired" } });
@@ -71,7 +71,7 @@ describe("generateStructured (provider.ts retry behavior)", () => {
         new FakeNoObjectGeneratedError("still garbled"),
       );
 
-    const result = await generateStructured({ prompt: "test", schema });
+    const result = await generateStructured({ prompt: "test", schema, phase: "jd-analysis" });
 
     expect(generateText).toHaveBeenCalledTimes(2);
     expect(result).toEqual({ ok: false, reason: "invalid_output" });
@@ -80,7 +80,7 @@ describe("generateStructured (provider.ts retry behavior)", () => {
   it("degrades to provider_error on a non-schema failure, with no retry", async () => {
     vi.mocked(generateText).mockRejectedValueOnce(new Error("network down"));
 
-    const result = await generateStructured({ prompt: "test", schema });
+    const result = await generateStructured({ prompt: "test", schema, phase: "jd-analysis" });
 
     expect(generateText).toHaveBeenCalledTimes(1);
     expect(result).toEqual({ ok: false, reason: "provider_error" });

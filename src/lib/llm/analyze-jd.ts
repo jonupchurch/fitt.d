@@ -26,5 +26,9 @@ export async function analyzeJobDescription(
   const template = promptBody(await readFile(PROMPT_PATH, "utf-8"));
   const prompt = template.replace("{{jd_text}}", text);
 
-  return generateStructured({ prompt, schema: JDAnalysisSchema });
+  return generateStructured({
+    prompt,
+    schema: JDAnalysisSchema,
+    phase: "jd-analysis",
+  });
 }

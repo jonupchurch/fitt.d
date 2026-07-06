@@ -1,5 +1,11 @@
 import { NoObjectGeneratedError, Output, generateText } from "ai";
 import type { z } from "zod";
+import {
+  estimateCostUsd,
+  logModelCall,
+  type ModelCallOutcome,
+  type ModelCallPhase,
+} from "../observability/model-call-log";
 
 const DEFAULT_MODEL = "anthropic/claude-haiku-4.5";
 
@@ -25,15 +31,37 @@ export type ProviderResult<T> =
 export async function generateStructured<T>(options: {
   prompt: string;
   schema: z.ZodType<T>;
+  phase: ModelCallPhase;
 }): Promise<ProviderResult<T>> {
   const model = currentModel();
+  const requestId = crypto.randomUUID();
+  const startedAt = Date.now();
+  const log = (
+    outcome: ModelCallOutcome,
+    usage?: { inputTokens?: number; outputTokens?: number },
+  ) =>
+    logModelCall({
+      requestId,
+      phase: options.phase,
+      model,
+      latencyMs: Date.now() - startedAt,
+      inputTokens: usage?.inputTokens,
+      outputTokens: usage?.outputTokens,
+      estimatedCostUsd: estimateCostUsd(
+        model,
+        usage?.inputTokens,
+        usage?.outputTokens,
+      ),
+      outcome,
+    });
 
   try {
-    const { output } = await generateText({
+    const { output, usage } = await generateText({
       model,
       output: Output.object({ schema: options.schema }),
       prompt: options.prompt,
     });
+    log("success", usage);
     return { ok: true, data: output };
   } catch (firstError) {
     if (!NoObjectGeneratedError.isInstance(firstError)) {
@@ -41,25 +69,29 @@ export async function generateStructured<T>(options: {
       // so without this the underlying cause (auth, billing, model
       // availability) is otherwise invisible in Vercel's runtime logs.
       console.error("generateStructured: provider call failed", firstError);
+      log("provider_error");
       return { ok: false, reason: "provider_error" };
     }
 
     try {
       const repairPrompt = `${options.prompt}\n\nYour previous response could not be parsed as valid JSON matching the required schema. Previous response:\n"""\n${firstError.text ?? ""}\n"""\n\nReturn ONLY corrected JSON matching the schema exactly — no extra prose.`;
-      const { output } = await generateText({
+      const { output, usage } = await generateText({
         model,
         output: Output.object({ schema: options.schema }),
         prompt: repairPrompt,
       });
+      log("repaired", usage);
       return { ok: true, data: output };
     } catch (secondError) {
       if (NoObjectGeneratedError.isInstance(secondError)) {
+        log("invalid_output");
         return { ok: false, reason: "invalid_output" };
       }
       console.error(
         "generateStructured: provider call failed on repair retry",
         secondError,
       );
+      log("provider_error");
       return { ok: false, reason: "provider_error" };
     }
   }

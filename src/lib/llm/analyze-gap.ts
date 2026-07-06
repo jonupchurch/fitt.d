@@ -37,5 +37,9 @@ export async function analyzeGap(
     .replace("{{jd_analysis_json}}", JSON.stringify(jdAnalysis))
     .replace("{{resume_analysis_json}}", JSON.stringify(resumeAnalysis));
 
-  return generateStructured({ prompt, schema: GapAnalysisSchema });
+  return generateStructured({
+    prompt,
+    schema: GapAnalysisSchema,
+    phase: "gap-analysis",
+  });
 }

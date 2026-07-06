@@ -33,5 +33,9 @@ export async function analyzeResume(
   const template = promptBody(await readFile(PROMPT_PATH, "utf-8"));
   const prompt = template.replace("{{resume_text}}", text);
 
-  return generateStructured({ prompt, schema: ResumeAnalysisSchema });
+  return generateStructured({
+    prompt,
+    schema: ResumeAnalysisSchema,
+    phase: "resume-analysis",
+  });
 }

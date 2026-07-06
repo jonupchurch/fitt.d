@@ -20,5 +20,7 @@ Format: lightweight [MADR](https://adr.github.io/madr/). Status is one of
 | [0008](0008-shareable-link-without-persistence.md) | Shareable report link as a URL-encoded trimmed summary, no server-side storage (feature 005) | Accepted |
 | [0009](0009-block-navigation-until-resume-analysis-completes.md) | Hard-gate wizard navigation until resume analysis resolves (post-MVP UX fix) | Accepted |
 | [0010](0010-persist-gap-analysis-with-write-time-invalidation.md) | Persist gap analysis and tailoring output with write-time invalidation (post-MVP caching fix) | Accepted |
+| [0011](0011-structured-model-call-logging.md) | Structured per-call logging for every LLM request (closing a stale observability gap) | Accepted |
+| [0012](0012-eval-harness-scoring-and-modes.md) | Eval harness scoring approach: fake-provider default + `--live` mode (closing a stale eval-harness gap) | Accepted |
 
 New decision? Copy `0000-template.md`.
