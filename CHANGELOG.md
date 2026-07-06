@@ -669,3 +669,13 @@ billable model calls per revisit.
 - New e2e test (`analyze-match.spec.ts`) intercepts both the gap
   analysis Server Action and the `/api/tailor-resume` route to prove
   call counts stay at 1 across a navigate-away-and-back cycle.
+
+## 2026-07-06 — chore: add Vitest code-coverage tooling
+
+Added `@vitest/coverage-v8` (devDependency) so `vitest run --coverage`
+reports real statement/branch/function/line percentages for `src/lib/**`
+— previously there was no coverage tooling configured at all. As of
+this addition: 85.4% statements, 71.2% branches, 83.3% functions, 88.5%
+lines (aggregate across the unit-tested logic layer only; UI code under
+`src/app`/`src/components` is exercised by Playwright instead, which
+doesn't produce a comparable percentage).
