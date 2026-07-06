@@ -66,8 +66,11 @@ test.describe("about page", () => {
   }) => {
     await page.goto("/about");
     const main = page.getByRole("main");
+    // Feature 008 replaced feature 006's placeholder "About Fitt.d"
+    // product-description copy with a personal bio page — "Jon
+    // Upchurch" is now the page's own h1.
     await expect(
-      main.getByRole("heading", { name: /about fitt\.d/i }),
+      main.getByRole("heading", { name: "Jon Upchurch" }),
     ).toBeVisible();
     // Scoped to <main> — dev-mode tooling (e.g. Next.js's own dev
     // indicator) can inject its own button elsewhere on the page.

@@ -9,6 +9,20 @@ the spot — this is the list to work from once the core MVP (features
 Each entry: what it is, which feature it came up during, and why it
 was deferred rather than folded in.
 
+## Downloadable resume/CV on the About page
+
+Surfaced during: feature 008 (About Page Bio & Journey), 2026-07-06.
+
+The About page's contact column lists email/LinkedIn/GitHub/repo
+links, but no way to download an actual resume/CV document. Explicitly
+scoped out of feature 008 (spec.md FR-005) — the page ships with no
+placeholder or "coming soon" control for it at all, rather than a
+broken or disabled button.
+
+Deferred rather than built now: needs an actual resume file to link to
+(and a decision on format — PDF vs. the app's own `.docx` tailoring
+output), neither of which existed yet when feature 008 shipped.
+
 ## ~~Block progression until resume analysis finishes~~ — Resolved 2026-07-06
 
 Surfaced during: post-MVP dogfooding of the full flow (all of

@@ -723,3 +723,35 @@ design — no code change beyond the two defaults. Historical ADR-0002
 and prior CHANGELOG entries are left describing `claude-sonnet-5`
 as-is; they're a record of what was decided at the time, not a live
 reference.
+
+## 2026-07-06 — Feature 008: About Page Bio & Journey
+
+Replaces feature 006's placeholder "what is Fitt.d" copy on `/about`
+with a personal bio page — the second post-MVP feature run through the
+full spec → plan → tasks → implement pipeline in one sitting.
+
+- A framed photo (`public/img/jonupchurchbiopicture.png`, via
+  `next/image` so the 2.3MB source is never shipped at full
+  resolution) sits upper-left in a white-mat/thin-frame treatment,
+  alongside a contact column (email, LinkedIn, GitHub, the Fitt.d repo
+  itself — deliberately no phone number, no resume/CV control yet;
+  tracked in `docs/future-work.md` as a fast-follow) — both colocated
+  under `src/app/about/` per this project's existing "page-specific
+  components live next to their page" convention.
+- A "Mission" section (a short professional bio and the project's
+  purpose) and a full-width chronological "journey" timeline —
+  8 milestones covering the real build history in plain language for
+  a non-technical reader: writing a constitution before any code,
+  planning all five MVP features before building any of them, the
+  build itself (including two real accessibility/state bugs caught
+  along the way), a later day of dogfooding that surfaced and fixed
+  three more real issues, two further features built the same
+  disciplined way, and the cost-conscious model swap.
+- Small `EmailIcon`/`LinkedInIcon`/`GitHubIcon` glyphs added to the
+  shared `src/components/icons.tsx`, added during review to make the
+  contact links more scannable without introducing a new visual
+  language (solid `currentColor` marks, distinct from the existing
+  line-icon style, matching how brand marks are conventionally
+  rendered).
+- No ADR needed — pure presentational content, the same reasoning as
+  feature 006.
