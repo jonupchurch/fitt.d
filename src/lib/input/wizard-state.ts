@@ -1,4 +1,9 @@
-import type { GapAnalysis, JDAnalysis, ResumeAnalysis } from "@/lib/llm/schemas";
+import type {
+  GapAnalysis,
+  JDAnalysis,
+  ResumeAnalysis,
+  TailoringOutput,
+} from "@/lib/llm/schemas";
 import type { JobDescription, Resume } from "./schemas";
 
 const RESUME_KEY = "fittd.resume";
@@ -6,6 +11,7 @@ const JOB_DESCRIPTION_KEY = "fittd.jobDescription";
 const JD_ANALYSIS_KEY = "fittd.jdAnalysis";
 const RESUME_ANALYSIS_KEY = "fittd.resumeAnalysis";
 const GAP_ANALYSIS_KEY = "fittd.gapAnalysis";
+const TAILORING_OUTPUT_KEY = "fittd.tailoringOutput";
 
 const listeners = new Set<() => void>();
 
@@ -62,11 +68,13 @@ export function setStoredResume(resume: Resume): void {
   // saving the same resume again shouldn't discard a valid analysis.
   if (previous?.rawText !== resume.rawText) {
     removeKey(RESUME_ANALYSIS_KEY);
-    // A stale fit result must go with it immediately — otherwise
-    // there's a window, between replacing the resume and its new
-    // analysis resolving, where GapAnalysis would still read "done"
-    // for a resume that no longer exists (ADR-0010).
+    // A stale fit result (and anything tailored from it) must go with
+    // it immediately — otherwise there's a window, between replacing
+    // the resume and its new analysis resolving, where GapAnalysis
+    // would still read "done" for a resume that no longer exists
+    // (ADR-0010).
     removeKey(GAP_ANALYSIS_KEY);
+    removeKey(TAILORING_OUTPUT_KEY);
   }
 }
 
@@ -107,12 +115,13 @@ export function getStoredJdAnalysis(): JDAnalysis | null {
  * state and were lost on navigation. */
 export function setStoredJdAnalysis(analysis: JDAnalysis): void {
   writeJson(JD_ANALYSIS_KEY, analysis);
-  // A new JD analysis invalidates any fit computed against the old one
-  // (ADR-0010). Unconditional — this only ever fires when the live
-  // preview actually recomputes, which requires the JD textarea to be
-  // actively edited again, not from merely revisiting the saved
-  // "ready" screen.
+  // A new JD analysis invalidates any fit (and anything tailored from
+  // it) computed against the old one (ADR-0010). Unconditional — this
+  // only ever fires when the live preview actually recomputes, which
+  // requires the JD textarea to be actively edited again, not from
+  // merely revisiting the saved "ready" screen.
   removeKey(GAP_ANALYSIS_KEY);
+  removeKey(TAILORING_OUTPUT_KEY);
 }
 
 export function getResumeAnalysisRaw(): string | null {
@@ -128,8 +137,10 @@ export function getStoredResumeAnalysis(): ResumeAnalysis | null {
 export function setStoredResumeAnalysis(analysis: ResumeAnalysis): void {
   writeJson(RESUME_ANALYSIS_KEY, analysis);
   // See setStoredJdAnalysis — a new resume analysis invalidates any
-  // fit computed against the old one (ADR-0010).
+  // fit (and anything tailored from it) computed against the old one
+  // (ADR-0010).
   removeKey(GAP_ANALYSIS_KEY);
+  removeKey(TAILORING_OUTPUT_KEY);
 }
 
 export function getGapAnalysisRaw(): string | null {
@@ -149,6 +160,23 @@ export function setStoredGapAnalysis(analysis: GapAnalysis): void {
   writeJson(GAP_ANALYSIS_KEY, analysis);
 }
 
+export function getTailoringOutputRaw(): string | null {
+  return readRaw(TAILORING_OUTPUT_KEY);
+}
+
+export function getStoredTailoringOutput(): TailoringOutput | null {
+  return parseJson<TailoringOutput>(getTailoringOutputRaw());
+}
+
+/** Called once the tailoring stream (feature 004) finishes validating,
+ * so revisiting /analyze/match with an unchanged resume/JD reuses the
+ * existing rewrites instead of re-streaming a fresh (billable) call —
+ * same invalidation rules as GapAnalysis (ADR-0010), since tailoring is
+ * itself derived from GapAnalysis + ResumeAnalysis + JDAnalysis. */
+export function setStoredTailoringOutput(output: TailoringOutput): void {
+  writeJson(TAILORING_OUTPUT_KEY, output);
+}
+
 /** Clears all wizard state. Used by the wizard status panel's "Start
  * over" reset (feature 007) — previously kept for completeness
  * alongside the more targeted `resetForNewJob` below, with no caller
@@ -159,6 +187,7 @@ export function clearWizardState(): void {
   removeKey(JD_ANALYSIS_KEY);
   removeKey(RESUME_ANALYSIS_KEY);
   removeKey(GAP_ANALYSIS_KEY);
+  removeKey(TAILORING_OUTPUT_KEY);
 }
 
 /**
@@ -166,14 +195,13 @@ export function clearWizardState(): void {
  * the job-description-and-beyond state so the candidate can compare
  * against a new job without re-uploading. `Resume`, `ResumeAnalysis`,
  * and `WorkingResumeCopy` (including its applied edits) are left
- * untouched. `GapAnalysis` is cleared explicitly here (feature 007) —
- * it's persisted now, and a new job invalidates the old fit result.
- * Not-yet-applied `TailoringOutput` suggestions still need no explicit
- * clear; they only ever live in /analyze/match's local React state, so
- * navigating away already discards them.
+ * untouched. `GapAnalysis` and `TailoringOutput` are both cleared
+ * explicitly here — both are persisted now (feature 007), and a new
+ * job invalidates the old fit result and anything tailored from it.
  */
 export function resetForNewJob(): void {
   removeKey(JOB_DESCRIPTION_KEY);
   removeKey(JD_ANALYSIS_KEY);
   removeKey(GAP_ANALYSIS_KEY);
+  removeKey(TAILORING_OUTPUT_KEY);
 }

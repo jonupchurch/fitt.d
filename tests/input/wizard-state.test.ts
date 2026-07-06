@@ -3,6 +3,7 @@ import type {
   GapAnalysis,
   JDAnalysis,
   ResumeAnalysis,
+  TailoringOutput,
 } from "../../src/lib/llm/schemas";
 import type { Resume } from "../../src/lib/input/schemas";
 import {
@@ -12,12 +13,14 @@ import {
   getJobDescriptionRaw,
   getResumeAnalysisRaw,
   getResumeRaw,
+  getTailoringOutputRaw,
   resetForNewJob,
   setStoredGapAnalysis,
   setStoredJdAnalysis,
   setStoredJobDescription,
   setStoredResume,
   setStoredResumeAnalysis,
+  setStoredTailoringOutput,
 } from "../../src/lib/input/wizard-state";
 
 /** Minimal in-memory sessionStorage stand-in — this test cares about
@@ -53,6 +56,7 @@ const OTHER_RESUME: Resume = {
 const RESUME_ANALYSIS = {} as ResumeAnalysis;
 const JD_ANALYSIS = {} as JDAnalysis;
 const GAP_ANALYSIS = {} as GapAnalysis;
+const TAILORING_OUTPUT = {} as TailoringOutput;
 
 describe("GapAnalysis persistence (ADR-0010)", () => {
   it("is cleared by a new setStoredResumeAnalysis call", () => {
@@ -100,13 +104,57 @@ describe("GapAnalysis persistence (ADR-0010)", () => {
   });
 });
 
+describe("TailoringOutput persistence (ADR-0010)", () => {
+  it("is cleared by a new setStoredResumeAnalysis call", () => {
+    setStoredTailoringOutput(TAILORING_OUTPUT);
+    expect(getTailoringOutputRaw()).not.toBeNull();
+
+    setStoredResumeAnalysis(RESUME_ANALYSIS);
+    expect(getTailoringOutputRaw()).toBeNull();
+  });
+
+  it("is cleared by a new setStoredJdAnalysis call", () => {
+    setStoredTailoringOutput(TAILORING_OUTPUT);
+    expect(getTailoringOutputRaw()).not.toBeNull();
+
+    setStoredJdAnalysis(JD_ANALYSIS);
+    expect(getTailoringOutputRaw()).toBeNull();
+  });
+
+  it("is cleared immediately when the resume content changes", () => {
+    setStoredResume(RESUME);
+    setStoredTailoringOutput(TAILORING_OUTPUT);
+    expect(getTailoringOutputRaw()).not.toBeNull();
+
+    setStoredResume(OTHER_RESUME);
+    expect(getTailoringOutputRaw()).toBeNull();
+  });
+
+  it("survives saving the same resume content again", () => {
+    setStoredResume(RESUME);
+    setStoredTailoringOutput(TAILORING_OUTPUT);
+
+    setStoredResume({ ...RESUME });
+    expect(getTailoringOutputRaw()).not.toBeNull();
+  });
+
+  it("is cleared by resetForNewJob (Try another job)", () => {
+    setStoredTailoringOutput(TAILORING_OUTPUT);
+    expect(getTailoringOutputRaw()).not.toBeNull();
+
+    resetForNewJob();
+    expect(getTailoringOutputRaw()).toBeNull();
+  });
+});
+
 describe("clearWizardState", () => {
-  it("clears all five wizard-state keys", () => {
+  it("clears all six wizard-state keys", () => {
     setStoredResume(RESUME);
     setStoredJobDescription({ rawText: "A job.", sizeChars: 6 });
     setStoredJdAnalysis(JD_ANALYSIS);
     setStoredResumeAnalysis(RESUME_ANALYSIS);
     setStoredGapAnalysis(GAP_ANALYSIS);
+    setStoredTailoringOutput(TAILORING_OUTPUT);
 
     clearWizardState();
 
@@ -115,5 +163,6 @@ describe("clearWizardState", () => {
     expect(getJdAnalysisRaw()).toBeNull();
     expect(getResumeAnalysisRaw()).toBeNull();
     expect(getGapAnalysisRaw()).toBeNull();
+    expect(getTailoringOutputRaw()).toBeNull();
   });
 });

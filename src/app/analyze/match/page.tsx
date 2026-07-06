@@ -10,7 +10,6 @@ import {
   TailoringOutputSchema,
   type GapAnalysis,
   type ResumeAnalysis,
-  type TailoringOutput,
 } from "@/lib/llm/schemas";
 import {
   applyBullet,
@@ -483,21 +482,22 @@ export default function MatchPage() {
     jdAnalysis,
     resumeAnalysis,
     resetForNewJob,
-    // Aliased — this page already tracks its own gapAnalysis local
-    // state below; this setter is only used to persist a computed
-    // result to wizard state (feature 007's status-panel checkpoint).
-    setGapAnalysis: persistGapAnalysis,
+    // Both persisted (ADR-0010) — reused directly as this page's source
+    // of truth instead of separate local state, so a cached result from
+    // an earlier visit this session is used as-is instead of
+    // recomputed. Both setters persist as well as update.
+    gapAnalysis,
+    setGapAnalysis,
+    tailoringOutput,
+    setTailoringOutput,
   } = useWizard();
 
-  const [gapAnalysis, setGapAnalysis] = useState<GapAnalysis | null>(null);
   const [gapError, setGapError] = useState<string | null>(null);
 
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [shareCopied, setShareCopied] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
-  const [tailoringOutput, setTailoringOutput] =
-    useState<TailoringOutput | null>(null);
   const [tailoringError, setTailoringError] = useState<string | null>(null);
   const hasStartedTailoringRef = useRef(false);
   const hasRetriedTailoringRef = useRef(false);
@@ -558,8 +558,13 @@ export default function MatchPage() {
   // All state updates happen inside a same-tick setTimeout(fn, 0), not
   // synchronously in the effect body — avoids react-hooks/set-state-in-effect,
   // same pattern as /analyze/report.
+  //
+  // Skips entirely if gapAnalysis is already present — either a cached
+  // result from earlier this session (ADR-0010: cleared only when the
+  // resume or JD actually changes) or one just computed and persisted
+  // below, which prevents this effect from re-firing a second call.
   useEffect(() => {
-    if (!jdAnalysis || !resumeAnalysis) return;
+    if (!jdAnalysis || !resumeAnalysis || gapAnalysis) return;
 
     let cancelled = false;
     const timer = setTimeout(() => {
@@ -569,11 +574,11 @@ export default function MatchPage() {
           setGapError(result.error.message);
           return;
         }
+        // Persists as well as updates — the wizard status panel's
+        // "fitt.d analysis" checkpoint (feature 007) reflects a
+        // genuinely computed fit, and both it and this page reuse the
+        // result for the rest of the session instead of recomputing.
         setGapAnalysis(result.data);
-        // Persisted so the wizard status panel's "fitt.d analysis"
-        // checkpoint (feature 007) reflects a genuinely computed fit,
-        // and stays accurate after navigating away and back.
-        persistGapAnalysis(result.data);
       });
     }, 0);
 
@@ -581,7 +586,7 @@ export default function MatchPage() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [jdAnalysis, resumeAnalysis, persistGapAnalysis]);
+  }, [jdAnalysis, resumeAnalysis, gapAnalysis, setGapAnalysis]);
 
   useEffect(() => {
     if (!resumeAnalysis) return;
@@ -597,17 +602,22 @@ export default function MatchPage() {
     return () => clearTimeout(timer);
   }, [resumeAnalysis]);
 
+  // !tailoringOutput skips this entirely when a cached result already
+  // exists (ADR-0010); hasStartedTailoringRef still guards against a
+  // duplicate concurrent call while one is genuinely in flight (before
+  // onFinish persists a result and tailoringOutput becomes non-null).
   useEffect(() => {
     if (
       gapAnalysis &&
       resumeAnalysis &&
       jdAnalysis &&
+      !tailoringOutput &&
       !hasStartedTailoringRef.current
     ) {
       hasStartedTailoringRef.current = true;
       submitTailoring({ gapAnalysis, resumeAnalysis, jdAnalysis });
     }
-  }, [gapAnalysis, resumeAnalysis, jdAnalysis, submitTailoring]);
+  }, [gapAnalysis, resumeAnalysis, jdAnalysis, tailoringOutput, submitTailoring]);
 
   function handleApply(index: number, original: string, rewritten: string) {
     applyBullet(index, original, rewritten);

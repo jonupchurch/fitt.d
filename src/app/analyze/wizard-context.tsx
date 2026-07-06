@@ -17,15 +17,22 @@ import {
   getJobDescriptionRaw,
   getResumeAnalysisRaw,
   getResumeRaw,
+  getTailoringOutputRaw,
   resetForNewJob,
   setStoredGapAnalysis,
   setStoredJdAnalysis,
   setStoredJobDescription,
   setStoredResume,
   setStoredResumeAnalysis,
+  setStoredTailoringOutput,
   subscribeToWizardState,
 } from "@/lib/input/wizard-state";
-import type { GapAnalysis, JDAnalysis, ResumeAnalysis } from "@/lib/llm/schemas";
+import type {
+  GapAnalysis,
+  JDAnalysis,
+  ResumeAnalysis,
+  TailoringOutput,
+} from "@/lib/llm/schemas";
 
 function parseJson<T>(raw: string | null): T | null {
   if (!raw) return null;
@@ -47,12 +54,14 @@ type WizardContextValue = {
   resumeAnalysis: ResumeAnalysis | null;
   resumeAnalysisFailed: boolean;
   gapAnalysis: GapAnalysis | null;
+  tailoringOutput: TailoringOutput | null;
   setResume: (resume: Resume) => void;
   setJobDescription: (jobDescription: JobDescription) => void;
   setJdAnalysis: (analysis: JDAnalysis) => void;
   setResumeAnalysis: (analysis: ResumeAnalysis) => void;
   setResumeAnalysisFailed: (failed: boolean) => void;
   setGapAnalysis: (analysis: GapAnalysis) => void;
+  setTailoringOutput: (output: TailoringOutput) => void;
   resetForNewJob: () => void;
   /** Full session reset (feature 007) — clears every wizard-state key.
    * Callers are responsible for navigating afterward (mirrors
@@ -92,6 +101,11 @@ export function WizardProvider({ children }: { children: ReactNode }) {
     getGapAnalysisRaw,
     getServerSnapshot,
   );
+  const tailoringOutputRaw = useSyncExternalStore(
+    subscribeToWizardState,
+    getTailoringOutputRaw,
+    getServerSnapshot,
+  );
 
   const resume = useMemo(() => parseJson<Resume>(resumeRaw), [resumeRaw]);
   const jobDescription = useMemo(
@@ -109,6 +123,10 @@ export function WizardProvider({ children }: { children: ReactNode }) {
   const gapAnalysis = useMemo(
     () => parseJson<GapAnalysis>(gapAnalysisRaw),
     [gapAnalysisRaw],
+  );
+  const tailoringOutput = useMemo(
+    () => parseJson<TailoringOutput>(tailoringOutputRaw),
+    [tailoringOutputRaw],
   );
 
   // Transient (not sessionStorage-backed) — only tracks whether the
@@ -135,12 +153,14 @@ export function WizardProvider({ children }: { children: ReactNode }) {
       resumeAnalysis,
       resumeAnalysisFailed,
       gapAnalysis,
+      tailoringOutput,
       setResume: setStoredResume,
       setJobDescription: setStoredJobDescription,
       setJdAnalysis: setStoredJdAnalysis,
       setResumeAnalysis: setStoredResumeAnalysis,
       setResumeAnalysisFailed,
       setGapAnalysis: setStoredGapAnalysis,
+      setTailoringOutput: setStoredTailoringOutput,
       resetForNewJob,
       resetWizard: clearWizardState,
     }),
@@ -151,6 +171,7 @@ export function WizardProvider({ children }: { children: ReactNode }) {
       resumeAnalysis,
       resumeAnalysisFailed,
       gapAnalysis,
+      tailoringOutput,
     ],
   );
 

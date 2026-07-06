@@ -647,3 +647,25 @@ process above — genuinely new product surface, not a fix.
 - `/analyze/layout.tsx` widened to a two-column layout (main content +
   status panel sidebar), stacking on narrow viewports — the existing
   wizard progress bar renders unchanged inside the main column.
+
+## 2026-07-06 — Fix: Match page silently recomputed on every revisit
+
+**A real bug, caught immediately after shipping feature 007**: the
+"fitt.d analysis" checkpoint's persistence only ever got *written* to —
+`/analyze/match` itself never read the persisted value back, so it
+called `analyzeGap` and streamed a fresh `submitTailoring` on every
+single visit, even with an unchanged resume/JD, silently wasting two
+billable model calls per revisit.
+
+- Extended ADR-0010's write-time invalidation to `TailoringOutput` as
+  well as `GapAnalysis` — both go stale at exactly the same moments
+  (a new resume/JD analysis, "Try another job," or a full reset), so
+  the same `wizard-state.ts` keys and rules cover both.
+- `/analyze/match` no longer keeps separate local `gapAnalysis`/
+  `tailoringOutput` state — it uses `useWizard()`'s persisted values
+  directly, and both effects now skip their model call entirely when
+  a cached value is already present. Revisiting the page with nothing
+  changed now shows both results instantly, with zero new calls.
+- New e2e test (`analyze-match.spec.ts`) intercepts both the gap
+  analysis Server Action and the `/api/tailor-resume` route to prove
+  call counts stay at 1 across a navigate-away-and-back cycle.

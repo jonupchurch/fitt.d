@@ -85,6 +85,47 @@ test.describe("match & comparison", () => {
     await expect(page.getByText(/^✓ Applied$/)).toBeVisible();
   });
 
+  test("reuses the cached fit and tailoring results on revisit instead of recomputing (ADR-0010)", async ({
+    page,
+  }) => {
+    let gapActionCalls = 0;
+    let tailoringApiCalls = 0;
+
+    await page.route("**/analyze/match", async (route) => {
+      const request = route.request();
+      if (request.method() === "POST" && request.headers()["next-action"]) {
+        gapActionCalls++;
+      }
+      await route.continue();
+    });
+    await page.route("**/api/tailor-resume", async (route) => {
+      tailoringApiCalls++;
+      await route.continue();
+    });
+
+    await completeBothAnalyses(
+      page,
+      "Jane Doe\nSenior Frontend Engineer with 5 years of experience.",
+      "We need a senior React and TypeScript engineer.",
+    );
+
+    await page.goto("/analyze/match");
+    await expect(page.getByText(/fit score: \d+ out of 100/i)).toBeVisible();
+    await expect(page.getByText("Tailored for this job")).toBeVisible();
+    expect(gapActionCalls).toBe(1);
+    expect(tailoringApiCalls).toBe(1);
+
+    // Navigate away and back with nothing changed — both cached
+    // results must appear instantly with no additional model calls.
+    await page.goto("/analyze/upload");
+    await page.goto("/analyze/match");
+
+    await expect(page.getByText(/fit score: \d+ out of 100/i)).toBeVisible();
+    await expect(page.getByText("Tailored for this job")).toBeVisible();
+    expect(gapActionCalls).toBe(1);
+    expect(tailoringApiCalls).toBe(1);
+  });
+
   test("degrades gracefully with a clear message when gap analysis fails", async ({
     page,
   }) => {
